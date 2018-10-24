@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2041
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MscrmTools.FluentQueryExpressions", "MscrmTools.FluentQueryExpressions\MscrmTools.FluentQueryExpressions.csproj", "{2A313862-8D9B-4191-BC2C-015AAFCE295F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MscrmTools.FluentQueryExpressions.Test", "MscrmTools.FluentQueryExpressions.Test\MscrmTools.FluentQueryExpressions.Test.csproj", "{11A7B20D-1DC3-4F04-81E5-C912B0017868}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A313862-8D9B-4191-BC2C-015AAFCE295F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A313862-8D9B-4191-BC2C-015AAFCE295F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A313862-8D9B-4191-BC2C-015AAFCE295F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A313862-8D9B-4191-BC2C-015AAFCE295F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11A7B20D-1DC3-4F04-81E5-C912B0017868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11A7B20D-1DC3-4F04-81E5-C912B0017868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11A7B20D-1DC3-4F04-81E5-C912B0017868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11A7B20D-1DC3-4F04-81E5-C912B0017868}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E37235A4-6179-4604-92CE-94FB4EB89388}
+	EndGlobalSection
+EndGlobal
