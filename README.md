@@ -4,7 +4,7 @@ A library to create QueryExpression the fluent way
 [![Build status](https://ci.appveyor.com/api/projects/status/lyre23w2ccnnyayr?svg=true)](https://ci.appveyor.com/project/MscrmTools/mscrmtools-fluentqueryexpressions)
 
 You can rely on :
-- [EarlyBoundGenerator](https://github.com/daryllabar/DLaB.Xrm.XrmToolBoxTools) from Daryl Labar to create the Early Bound Entities to be used with this project (optional)
+- [EarlyBoundGenerator](https://github.com/daryllabar/DLaB.Xrm.XrmToolBoxTools) from Daryl LaBar to create the Early Bound Entities to be used with this project (optional)
 - [LateBoundConstantsGenerator](https://github.com/rappen/LateboundConstantsGenerator) from Jonas Rapp to create Late Bound constants to be used with this projet (optional)
 
 ## Query properties
