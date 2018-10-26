@@ -23,6 +23,16 @@ namespace MscrmTools.FluentQueryExpressions.Test
         }
 
         [TestMethod]
+        public void ShouldAddAttributesWithAnonymousType()
+        {
+            var query = new Query<Account>()
+                .Select(a => new { a.Name, a.AccountNumber });
+
+            Assert.IsTrue(query.QueryExpression.ColumnSet.Columns.Contains(Account.Fields.Name));
+            Assert.IsTrue(query.QueryExpression.ColumnSet.Columns.Contains(Account.Fields.AccountNumber));
+        }
+
+        [TestMethod]
         public void ShouldAddFilter()
         {
             var query = new Query<Account>()
@@ -2033,6 +2043,41 @@ namespace MscrmTools.FluentQueryExpressions.Test
                 var records = new Query<Account>()
                     .Top(100)
                     .GetAll(service);
+
+                Assert.AreEqual(records.Count, 1);
+                Assert.AreEqual(records.First().Id, item1Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetAllWithExtension()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var records = service.RetrieveMultiple(new Query<Account>());
 
                 Assert.AreEqual(records.Count, 1);
                 Assert.AreEqual(records.First().Id, item1Id);

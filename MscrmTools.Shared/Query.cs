@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
+using MscrmTools.FluentQueryExpressions.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace MscrmTools.FluentQueryExpressions
 {
@@ -70,6 +72,13 @@ namespace MscrmTools.FluentQueryExpressions
             }
 
             QueryExpression.ColumnSet.AddColumns(attributes);
+
+            return this;
+        }
+
+        public Query<T> Select(Expression<Func<T, object>> anonymousTypeInitializer)
+        {
+            QueryExpression.ColumnSet.AddColumns(AnonymousTypeHelper.GetAttributeNamesArray(anonymousTypeInitializer));
 
             return this;
         }
@@ -247,6 +256,8 @@ namespace MscrmTools.FluentQueryExpressions
             return this;
         }
 
+#if CRMV9
+
         public Query<T> WhereContainValues(string attributeName, params object[] values)
         {
             QueryExpression.Criteria.AddCondition(attributeName, ConditionOperator.ContainValues, values);
@@ -260,6 +271,8 @@ namespace MscrmTools.FluentQueryExpressions
 
             return this;
         }
+
+#endif
 
         public Query<T> WhereDoesNotBeginWith(string attributeName, object value, string entityname = null)
         {
@@ -288,7 +301,7 @@ namespace MscrmTools.FluentQueryExpressions
 
             return this;
         }
-
+#if CRMV9
         public Query<T> WhereDoesNotContainValues(string attributeName, params object[] values)
         {
             QueryExpression.Criteria.AddCondition(attributeName, ConditionOperator.DoesNotContainValues, values);
@@ -302,7 +315,7 @@ namespace MscrmTools.FluentQueryExpressions
 
             return this;
         }
-
+#endif
         public Query<T> WhereDoesNotEndWith(string attributeName, object value, string entityname = null)
         {
             if (entityname != null)

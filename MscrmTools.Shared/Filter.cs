@@ -111,7 +111,7 @@ namespace MscrmTools.FluentQueryExpressions
 
             return this;
         }
-
+#if CRMV9
         public Filter WhereContainValues(string attributeName, params object[] values)
         {
             InnerFilter.AddCondition(attributeName, ConditionOperator.ContainValues, values);
@@ -125,6 +125,7 @@ namespace MscrmTools.FluentQueryExpressions
 
             return this;
         }
+#endif
 
         public Filter WhereDoesNotBeginWith(string attributeName, object value, string entityname = null)
         {
@@ -153,7 +154,7 @@ namespace MscrmTools.FluentQueryExpressions
 
             return this;
         }
-
+#if CRMV9
         public Filter WhereDoesNotContainValues(string attributeName, params object[] values)
         {
             InnerFilter.AddCondition(attributeName, ConditionOperator.DoesNotContainValues, values);
@@ -167,7 +168,7 @@ namespace MscrmTools.FluentQueryExpressions
 
             return this;
         }
-
+#endif
         public Filter WhereDoesNotEndWith(string attributeName, object value, string entityname = null)
         {
             if (entityname != null)
