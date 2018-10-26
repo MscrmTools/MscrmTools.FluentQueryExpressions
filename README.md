@@ -24,6 +24,9 @@ var query = new Query<Account>()
 var earlyBoundQuery = new Query<Account>()
                 .Select(Account.Fields.Name, Account.Fields.AccountNumber);
                 
+var earlyBoundQuery2 = new Query<Account>()
+                .Select(a => new { a.Name, a.AccountNumber});
+                
 var lateBoundQuery = new Query("account")
                 .Select("name", "accountnumber");
                 
