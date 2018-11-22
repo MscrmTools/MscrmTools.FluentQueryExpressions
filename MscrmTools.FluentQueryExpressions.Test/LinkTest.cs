@@ -59,6 +59,18 @@ namespace MscrmTools.FluentQueryExpressions.Test
         }
 
         [TestMethod]
+        public void ShouldAddOrder()
+        {
+            var query = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId,
+                        JoinOperator.LeftOuter)
+                    .Order(Contact.Fields.FullName, OrderType.Ascending));
+
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().Orders.First().AttributeName, Contact.Fields.FullName);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().Orders.First().OrderType, OrderType.Ascending);
+        }
+
+        [TestMethod]
         public void ShouldCreateLink()
         {
             var query = new Query<Account>()

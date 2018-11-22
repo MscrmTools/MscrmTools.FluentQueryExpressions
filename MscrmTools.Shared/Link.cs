@@ -88,6 +88,13 @@ namespace MscrmTools.FluentQueryExpressions
             return this;
         }
 
+        public Link<T> Order(string attribute, OrderType order)
+        {
+            InnerLinkEntity.Orders.Add(new OrderExpression(attribute, order));
+
+            return this;
+        }
+
         #region Conditions
 
         public Link<T> Where(string attributeName, ConditionOperator conditionOperator, params object[] values)
