@@ -2,6 +2,8 @@
 using Microsoft.Xrm.Sdk.Query;
 using MscrmTools.FluentQueryExpressions.Test.AppCode;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -564,6 +566,25 @@ namespace MscrmTools.FluentQueryExpressions.Test
             Assert.AreEqual(query2.QueryExpression.Criteria.Filters.First().Conditions.First().AttributeName, Account.Fields.CreatedOn);
             Assert.AreEqual(query2.QueryExpression.Criteria.Filters.First().Conditions.First().Operator, ConditionOperator.InFiscalYear);
             Assert.AreEqual(query2.QueryExpression.Criteria.Filters.First().Conditions.First().Values.First(), 2018);
+        }
+
+        [TestMethod]
+        public void ShouldSetWhereInList()
+        {
+            var query = new Query<Account>()
+                .AddFilters(new Filter().WhereIn(Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 }));
+
+            Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().Conditions.First().Operator, ConditionOperator.In);
+            Assert.IsTrue(query.QueryExpression.Criteria.Filters.First().Conditions.First().Values is IList);
+
+            var query2 = new Query<Account>()
+                .AddFilters(new Filter().WhereIn(Account.EntityLogicalName, Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 }));
+
+            Assert.AreEqual(query2.QueryExpression.Criteria.Filters.First().Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Filters.First().Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Filters.First().Conditions.First().Operator, ConditionOperator.In);
+            Assert.IsTrue(query.QueryExpression.Criteria.Filters.First().Conditions.First().Values is IList);
         }
 
         [TestMethod]
@@ -1298,6 +1319,25 @@ namespace MscrmTools.FluentQueryExpressions.Test
             Assert.IsTrue(query2.QueryExpression.Criteria.Filters.First().Conditions.First().Values.Contains(1));
             Assert.IsTrue(query2.QueryExpression.Criteria.Filters.First().Conditions.First().Values.Contains(2));
             Assert.IsTrue(query2.QueryExpression.Criteria.Filters.First().Conditions.First().Values.Contains(3));
+        }
+
+        [TestMethod]
+        public void ShouldSetWhereNotInList()
+        {
+            var query = new Query<Account>()
+                .AddFilters(new Filter().WhereNotIn(Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 }));
+
+            Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().Conditions.First().Operator, ConditionOperator.NotIn);
+            Assert.IsTrue(query.QueryExpression.Criteria.Filters.First().Conditions.First().Values is IList);
+
+            var query2 = new Query<Account>()
+                .AddFilters(new Filter().WhereNotIn(Account.EntityLogicalName, Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 }));
+
+            Assert.AreEqual(query2.QueryExpression.Criteria.Filters.First().Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Filters.First().Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Filters.First().Conditions.First().Operator, ConditionOperator.NotIn);
+            Assert.IsTrue(query.QueryExpression.Criteria.Filters.First().Conditions.First().Values is IList);
         }
 
         [TestMethod]

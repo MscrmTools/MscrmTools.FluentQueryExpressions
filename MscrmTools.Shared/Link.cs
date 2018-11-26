@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using System;
+using System.Collections;
 using System.Linq;
 
 namespace MscrmTools.FluentQueryExpressions
@@ -431,6 +432,20 @@ namespace MscrmTools.FluentQueryExpressions
         public Link<T> WhereIn(string entityname, string attributeName, params object[] values)
         {
             InnerLinkEntity.LinkCriteria.AddCondition(entityname, attributeName, ConditionOperator.In, values);
+
+            return this;
+        }
+
+        public Link<T> WhereIn(string attributeName, IList value)
+        {
+            InnerLinkEntity.LinkCriteria.Conditions.Add(new ConditionExpression(attributeName, ConditionOperator.In, value));
+
+            return this;
+        }
+
+        public Link<T> WhereIn(string entityname, string attributeName, IList value)
+        {
+            InnerLinkEntity.LinkCriteria.Conditions.Add(new ConditionExpression(entityname, attributeName, ConditionOperator.In, value));
 
             return this;
         }
@@ -1007,6 +1022,20 @@ namespace MscrmTools.FluentQueryExpressions
         public Link<T> WhereNotIn(string entityname, string attributeName, params object[] values)
         {
             InnerLinkEntity.LinkCriteria.AddCondition(entityname, attributeName, ConditionOperator.NotIn, values);
+
+            return this;
+        }
+
+        public Link<T> WhereNotIn(string attributeName, IList value)
+        {
+            InnerLinkEntity.LinkCriteria.Conditions.Add(new ConditionExpression(attributeName, ConditionOperator.NotIn, value));
+
+            return this;
+        }
+
+        public Link<T> WhereNotIn(string entityname, string attributeName, IList value)
+        {
+            InnerLinkEntity.LinkCriteria.Conditions.Add(new ConditionExpression(entityname, attributeName, ConditionOperator.NotIn, value));
 
             return this;
         }

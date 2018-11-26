@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xrm.Sdk.Query;
 using System;
+using System.Collections;
 
 namespace MscrmTools.FluentQueryExpressions
 {
@@ -348,6 +349,20 @@ namespace MscrmTools.FluentQueryExpressions
         public Filter WhereIn(string entityname, string attributeName, params object[] values)
         {
             InnerFilter.AddCondition(entityname, attributeName, ConditionOperator.In, values);
+
+            return this;
+        }
+
+        public Filter WhereIn(string attributeName, IList value)
+        {
+            InnerFilter.Conditions.Add(new ConditionExpression(attributeName, ConditionOperator.In, value));
+
+            return this;
+        }
+
+        public Filter WhereIn(string entityname, string attributeName, IList value)
+        {
+            InnerFilter.Conditions.Add(new ConditionExpression(entityname, attributeName, ConditionOperator.In, value));
 
             return this;
         }
@@ -924,6 +939,20 @@ namespace MscrmTools.FluentQueryExpressions
         public Filter WhereNotIn(string entityname, string attributeName, params object[] values)
         {
             InnerFilter.AddCondition(entityname, attributeName, ConditionOperator.NotIn, values);
+
+            return this;
+        }
+
+        public Filter WhereNotIn(string attributeName, IList value)
+        {
+            InnerFilter.AddCondition(attributeName, ConditionOperator.NotIn, value);
+
+            return this;
+        }
+
+        public Filter WhereNotIn(string entityname, string attributeName, IList value)
+        {
+            InnerFilter.AddCondition(entityname, attributeName, ConditionOperator.NotIn, value);
 
             return this;
         }

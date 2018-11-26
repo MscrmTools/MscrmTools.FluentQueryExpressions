@@ -2,6 +2,8 @@
 using Microsoft.Xrm.Sdk.Query;
 using MscrmTools.FluentQueryExpressions.Test.AppCode;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -693,6 +695,27 @@ namespace MscrmTools.FluentQueryExpressions.Test
             Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Account.Fields.CreatedOn);
             Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.InFiscalYear);
             Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), 2018);
+        }
+
+        [TestMethod]
+        public void ShouldSetWhereInList()
+        {
+            var query = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .WhereIn(Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 }));
+
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.In);
+            Assert.IsTrue(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values is IList);
+
+            var query2 = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .WhereIn(Account.EntityLogicalName, Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 }));
+
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.In);
+            Assert.IsTrue(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values is IList);
         }
 
         [TestMethod]
@@ -1427,6 +1450,27 @@ namespace MscrmTools.FluentQueryExpressions.Test
             Assert.IsTrue(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.Contains(1));
             Assert.IsTrue(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.Contains(2));
             Assert.IsTrue(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.Contains(3));
+        }
+
+        [TestMethod]
+        public void ShouldSetWhereNotInList()
+        {
+            var query = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .WhereNotIn(Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 }));
+
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.NotIn);
+            Assert.IsTrue(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values is IList);
+
+            var query2 = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .WhereNotIn(Account.EntityLogicalName, Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 }));
+
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.NotIn);
+            Assert.IsTrue(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values is IList);
         }
 
         [TestMethod]

@@ -4,6 +4,8 @@ using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using MscrmTools.FluentQueryExpressions.Test.AppCode;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -753,6 +755,25 @@ namespace MscrmTools.FluentQueryExpressions.Test
         }
 
         [TestMethod]
+        public void ShouldSetWhereInList()
+        {
+            var query = new Query<Account>()
+                .WhereIn(Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 });
+
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.In);
+            Assert.IsTrue(query.QueryExpression.Criteria.Conditions.First().Values is IList);
+
+            var query2 = new Query<Account>()
+                .WhereIn(Account.EntityLogicalName, Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 });
+
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.In);
+            Assert.IsTrue(query.QueryExpression.Criteria.Conditions.First().Values is IList);
+        }
+
+        [TestMethod]
         public void ShouldSetWhereInOrAfterFiscalPeriodAndYear()
         {
             var query = new Query<Account>()
@@ -1484,6 +1505,25 @@ namespace MscrmTools.FluentQueryExpressions.Test
             Assert.IsTrue(query2.QueryExpression.Criteria.Conditions.First().Values.Contains(1));
             Assert.IsTrue(query2.QueryExpression.Criteria.Conditions.First().Values.Contains(2));
             Assert.IsTrue(query2.QueryExpression.Criteria.Conditions.First().Values.Contains(3));
+        }
+
+        [TestMethod]
+        public void ShouldSetWhereNotInList()
+        {
+            var query = new Query<Account>()
+                .WhereNotIn(Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 });
+
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.NotIn);
+            Assert.IsTrue(query.QueryExpression.Criteria.Conditions.First().Values is IList);
+
+            var query2 = new Query<Account>()
+                .WhereNotIn(Account.EntityLogicalName, Account.Fields.CustomerTypeCode, new List<int> { 1, 2, 3 });
+
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.CustomerTypeCode);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.NotIn);
+            Assert.IsTrue(query.QueryExpression.Criteria.Conditions.First().Values is IList);
         }
 
         [TestMethod]

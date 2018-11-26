@@ -2,6 +2,7 @@
 using Microsoft.Xrm.Sdk.Query;
 using MscrmTools.FluentQueryExpressions.Helpers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -485,16 +486,30 @@ namespace MscrmTools.FluentQueryExpressions
             return this;
         }
 
+        public Query<T> WhereIn(string attributeName, IList value)
+        {
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(attributeName, ConditionOperator.In, value));
+
+            return this;
+        }
+
         public Query<T> WhereIn(string attributeName, params object[] values)
         {
-            QueryExpression.Criteria.AddCondition(attributeName, ConditionOperator.In, values);
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(attributeName, ConditionOperator.In, values));
+
+            return this;
+        }
+
+        public Query<T> WhereIn(string entityname, string attributeName, IList value)
+        {
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(entityname, attributeName, ConditionOperator.In, value));
 
             return this;
         }
 
         public Query<T> WhereIn(string entityname, string attributeName, params object[] values)
         {
-            QueryExpression.Criteria.AddCondition(entityname, attributeName, ConditionOperator.In, values);
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(entityname, attributeName, ConditionOperator.In, values));
 
             return this;
         }
@@ -1057,6 +1072,20 @@ namespace MscrmTools.FluentQueryExpressions
             {
                 QueryExpression.Criteria.AddCondition(attributeName, ConditionOperator.NotEqualUserId);
             }
+
+            return this;
+        }
+
+        public Query<T> WhereNotIn(string entityname, string attributeName, IList value)
+        {
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(entityname, attributeName, ConditionOperator.NotIn, value));
+
+            return this;
+        }
+
+        public Query<T> WhereNotIn(string attributeName, IList value)
+        {
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(attributeName, ConditionOperator.NotIn, value));
 
             return this;
         }
