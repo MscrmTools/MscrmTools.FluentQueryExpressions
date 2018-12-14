@@ -14,11 +14,37 @@ namespace MscrmTools.FluentQueryExpressions.Test
     public class FilterTest
     {
         [TestMethod]
+        public void ShouldAddFilter()
+        {
+            var query = new Query<Account>()
+                .AddFilters(LogicalOperator.Or, new Filter(LogicalOperator.Or).AddFilters(new Filter(LogicalOperator.Or)));
+
+            Assert.AreEqual(query.QueryExpression.Criteria.FilterOperator, LogicalOperator.Or);
+            Assert.AreEqual(query.QueryExpression.Criteria.Filters.Count, 1);
+            Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().Filters.First().FilterOperator, LogicalOperator.Or);
+        }
+
+        [TestMethod]
+        public void ShouldAddFilterWithoutOperator()
+        {
+            var query = new Query<Account>()
+                .AddFilters(new Filter()
+                    .AddFilters(new Filter()));
+
+            Assert.AreEqual(query.QueryExpression.Criteria.FilterOperator, LogicalOperator.And);
+            Assert.AreEqual(query.QueryExpression.Criteria.Filters.Count, 1);
+            Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().FilterOperator, LogicalOperator.And);
+            Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().Filters.First().FilterOperator, LogicalOperator.And);
+        }
+
+        [TestMethod]
         public void ShouldCreateFilter()
         {
             var query = new Query<Account>()
-                .AddFilters(new Filter());
+                .AddFilters(new Filter()
+                    .AddFilters(new Filter()));
 
+            Assert.AreEqual(query.QueryExpression.Criteria.FilterOperator, LogicalOperator.And);
             Assert.AreEqual(query.QueryExpression.Criteria.Filters.Count, 1);
             Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().FilterOperator, LogicalOperator.And);
         }
@@ -31,6 +57,17 @@ namespace MscrmTools.FluentQueryExpressions.Test
 
             Assert.AreEqual(query.QueryExpression.Criteria.Filters.Count, 1);
             Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().FilterOperator, LogicalOperator.Or);
+        }
+
+        [TestMethod]
+        public void ShouldSetLogicalOperatorOr()
+        {
+            var query = new Query<Account>()
+                .AddFilters(new Filter(LogicalOperator.Or)
+                    .AddFilters(new Filter()
+                        .SetDefaultFilterOperator(LogicalOperator.Or)));
+
+            Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().Filters.First().FilterOperator, LogicalOperator.Or);
         }
 
         #region Conditions

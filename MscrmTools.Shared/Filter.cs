@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Collections;
+using System.Linq;
 
 namespace MscrmTools.FluentQueryExpressions
 {
@@ -12,6 +13,32 @@ namespace MscrmTools.FluentQueryExpressions
         }
 
         internal FilterExpression InnerFilter { get; }
+
+        #region Filters
+
+        public Filter AddFilters(params Filter[] filters)
+        {
+            InnerFilter.Filters.AddRange(filters.Select(f => f.InnerFilter));
+
+            return this;
+        }
+
+        public Filter AddFilters(LogicalOperator logicalOperator, params Filter[] filters)
+        {
+            InnerFilter.FilterOperator = logicalOperator;
+            InnerFilter.Filters.AddRange(filters.Select(f => f.InnerFilter));
+
+            return this;
+        }
+
+        public Filter SetDefaultFilterOperator(LogicalOperator logicalOperator)
+        {
+            InnerFilter.FilterOperator = logicalOperator;
+
+            return this;
+        }
+
+        #endregion Filters
 
         #region Conditions
 
