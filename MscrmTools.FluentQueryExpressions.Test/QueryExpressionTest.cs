@@ -2161,6 +2161,78 @@ namespace MscrmTools.FluentQueryExpressions.Test
         }
 
         [TestMethod]
+        public void ShouldGetById()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var query = new Query<Account>();
+                var record = query.GetById(Guid.NewGuid(), service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(Account.EntityLogicalName + "id", query.QueryExpression.Criteria.Conditions.First().AttributeName);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetByIdForActivity()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var query = new Query<Task>();
+                var record = query.GetById(Guid.NewGuid(), service, true);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual("activityid", query.QueryExpression.Criteria.Conditions.First().AttributeName);
+            }
+        }
+
+        [TestMethod]
         public void ShouldGetFirst()
         {
             using (ShimsContext.Create())

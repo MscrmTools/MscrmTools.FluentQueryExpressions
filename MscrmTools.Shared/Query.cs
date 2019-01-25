@@ -1517,6 +1517,19 @@ namespace MscrmTools.FluentQueryExpressions
             return service.RetrieveMultiple(QueryExpression).Entities.SingleOrDefault()?.ToEntity<T>();
         }
 
+        public T GetById(Guid id, IOrganizationService service, bool isActivityEntity = false)
+        {
+            QueryExpression.Criteria = new FilterExpression
+            {
+                Conditions =
+                {
+                    new ConditionExpression(isActivityEntity ? "activityid" : QueryExpression.EntityName + "id", ConditionOperator.Equal, id)
+                }
+            };
+
+            return GetFirstOrDefault(service);
+        }
+
         #endregion Service calls
     }
 }
