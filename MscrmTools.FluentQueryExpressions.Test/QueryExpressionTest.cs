@@ -222,6 +222,132 @@ namespace MscrmTools.FluentQueryExpressions.Test
         #region Conditions
 
         [TestMethod]
+        public void ShouldCompareWhereEqual()
+        {
+            var query = new Query<Account>()
+                .Compare(Account.Fields.NumberOfEmployees).Equals(Account.Fields.Revenue);
+
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.Equal);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .Compare(Account.EntityLogicalName, Account.Fields.NumberOfEmployees).Equals(Account.Fields.Revenue);
+
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.Equal);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
+        public void ShouldCompareWhereGreaterOrEqualThan()
+        {
+            var query = new Query<Account>()
+                .Compare(Account.Fields.NumberOfEmployees).GreaterOrEqualThan(Account.Fields.Revenue);
+
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.GreaterEqual);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .Compare(Account.EntityLogicalName, Account.Fields.NumberOfEmployees).GreaterOrEqualThan(Account.Fields.Revenue);
+
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.GreaterEqual);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
+        public void ShouldCompareWhereGreaterThan()
+        {
+            var query = new Query<Account>()
+                .Compare(Account.Fields.NumberOfEmployees).GreaterThan(Account.Fields.Revenue);
+
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.GreaterThan);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .Compare(Account.EntityLogicalName, Account.Fields.NumberOfEmployees).GreaterThan(Account.Fields.Revenue);
+
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.GreaterThan);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
+        public void ShouldCompareWhereLessOrEqualThan()
+        {
+            var query = new Query<Account>()
+                .Compare(Account.Fields.NumberOfEmployees).LessOrEqualThan(Account.Fields.Revenue);
+
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.LessEqual);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .Compare(Account.EntityLogicalName, Account.Fields.NumberOfEmployees).LessOrEqualThan(Account.Fields.Revenue);
+
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.LessEqual);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
+        public void ShouldCompareWhereLessThan()
+        {
+            var query = new Query<Account>()
+                .Compare(Account.Fields.NumberOfEmployees).LessThan(Account.Fields.Revenue);
+
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.LessThan);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .Compare(Account.EntityLogicalName, Account.Fields.NumberOfEmployees).LessThan(Account.Fields.Revenue);
+
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.LessThan);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
+        public void ShouldCompareWhereNotEqual()
+        {
+            var query = new Query<Account>()
+                .Compare(Account.Fields.NumberOfEmployees).NotEqual(Account.Fields.Revenue);
+
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.NotEqual);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .Compare(Account.EntityLogicalName, Account.Fields.NumberOfEmployees).NotEqual(Account.Fields.Revenue);
+
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().EntityName, Account.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Operator, ConditionOperator.NotEqual);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().Values.First(), Account.Fields.Revenue);
+            Assert.AreEqual(query2.QueryExpression.Criteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
         public void ShouldSetWhere()
         {
             var guid = Guid.NewGuid();

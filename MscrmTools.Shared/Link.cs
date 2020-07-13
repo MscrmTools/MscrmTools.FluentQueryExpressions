@@ -96,6 +96,22 @@ namespace MscrmTools.FluentQueryExpressions
             return this;
         }
 
+        #region Columns Comparer
+
+#if CRMV9
+        public Shared.AppCode.Comparer<Link<T>> Compare(string attributeName)
+        {
+            return new Shared.AppCode.Comparer<Link<T>>(this, attributeName);
+        }
+
+        public Shared.AppCode.Comparer<Link<T>> Compare(string entityName, string attributeName)
+        {
+            return new Shared.AppCode.Comparer<Link<T>>(this, entityName, attributeName);
+        }
+#endif
+
+        #endregion Columns Comparer
+
         #region Conditions
 
         public Link<T> Where(string attributeName, ConditionOperator conditionOperator, params object[] values)

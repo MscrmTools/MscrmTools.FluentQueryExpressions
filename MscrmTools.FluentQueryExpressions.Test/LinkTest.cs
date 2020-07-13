@@ -165,6 +165,144 @@ namespace MscrmTools.FluentQueryExpressions.Test
         #region Conditions
 
         [TestMethod]
+        public void ShouldCompareWhereEqual()
+        {
+            var query = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .Compare(Contact.Fields.NumberOfChildren).Equals(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.Equal);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .Compare(Contact.EntityLogicalName, Contact.Fields.NumberOfChildren).Equals(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().EntityName, Contact.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.Equal);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
+        public void ShouldCompareWhereGreaterOrEqualThan()
+        {
+            var query = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .Compare(Contact.Fields.NumberOfChildren).GreaterOrEqualThan(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.GreaterEqual);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .Compare(Contact.EntityLogicalName, Contact.Fields.NumberOfChildren).GreaterOrEqualThan(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().EntityName, Contact.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.GreaterEqual);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
+        public void ShouldCompareWhereGreaterThan()
+        {
+            var query = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .Compare(Contact.Fields.NumberOfChildren).GreaterThan(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.GreaterThan);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .Compare(Contact.EntityLogicalName, Contact.Fields.NumberOfChildren).GreaterThan(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().EntityName, Contact.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.GreaterThan);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
+        public void ShouldCompareWhereLessOrEqualThan()
+        {
+            var query = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .Compare(Contact.Fields.NumberOfChildren).LessOrEqualThan(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.LessEqual);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .Compare(Contact.EntityLogicalName, Contact.Fields.NumberOfChildren).LessOrEqualThan(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().EntityName, Contact.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.LessEqual);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
+        public void ShouldCompareWhereLessThan()
+        {
+            var query = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .Compare(Contact.Fields.NumberOfChildren).LessThan(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.LessThan);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .Compare(Contact.EntityLogicalName, Contact.Fields.NumberOfChildren).LessThan(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().EntityName, Contact.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.LessThan);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
+        public void ShouldCompareWhereNotEqual()
+        {
+            var query = new Query<Account>()
+                    .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                        .Compare(Contact.Fields.NumberOfChildren).NotEqual(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.NotEqual);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+
+            var query2 = new Query<Account>()
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                    .Compare(Contact.EntityLogicalName, Contact.Fields.NumberOfChildren).NotEqual(Contact.Fields.AnnualIncome));
+
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().EntityName, Contact.EntityLogicalName);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().AttributeName, Contact.Fields.NumberOfChildren);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Operator, ConditionOperator.NotEqual);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().Values.First(), Contact.Fields.AnnualIncome);
+            Assert.AreEqual(query2.QueryExpression.LinkEntities.First().LinkCriteria.Conditions.First().CompareColumns, true);
+        }
+
+        [TestMethod]
         public void ShouldSetWhere()
         {
             var guid = Guid.NewGuid();

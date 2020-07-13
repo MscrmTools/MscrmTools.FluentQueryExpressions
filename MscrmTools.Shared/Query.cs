@@ -80,7 +80,6 @@ namespace MscrmTools.FluentQueryExpressions
         public Query<T> Select(Expression<Func<T, object>> anonymousTypeInitializer)
         {
             QueryExpression.ColumnSet.AddColumns(AnonymousTypeHelper.GetAttributeNamesArray(anonymousTypeInitializer));
-
             return this;
         }
 
@@ -111,6 +110,22 @@ namespace MscrmTools.FluentQueryExpressions
         }
 
         #endregion Filters
+
+        #region Columns Comparer
+
+#if CRMV9
+        public Shared.AppCode.Comparer<Query<T>> Compare(string attributeName)
+        {
+            return new Shared.AppCode.Comparer<Query<T>>(this, attributeName);
+        }
+
+        public Shared.AppCode.Comparer<Query<T>> Compare(string entityName, string attributeName)
+        {
+            return new Shared.AppCode.Comparer<Query<T>>(this, entityName, attributeName);
+        }
+#endif
+
+        #endregion Columns Comparer
 
         #region Link Entities
 

@@ -40,6 +40,22 @@ namespace MscrmTools.FluentQueryExpressions
 
         #endregion Filters
 
+        #region Columns Comparer
+
+#if CRMV9
+        public Shared.AppCode.Comparer<Filter> Compare(string attributeName)
+        {
+            return new Shared.AppCode.Comparer<Filter>(this, attributeName);
+        }
+
+        public Shared.AppCode.Comparer<Filter> Compare(string entityName, string attributeName)
+        {
+            return new Shared.AppCode.Comparer<Filter>(this, entityName, attributeName);
+        }
+#endif
+
+        #endregion Columns Comparer
+
         #region Conditions
 
         public Filter Where(string attributeName, ConditionOperator conditionOperator, params object[] values)
@@ -139,6 +155,7 @@ namespace MscrmTools.FluentQueryExpressions
 
             return this;
         }
+
 #if CRMV9
         public Filter WhereContainValues(string attributeName, params object[] values)
         {
