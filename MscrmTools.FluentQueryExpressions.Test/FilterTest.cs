@@ -76,7 +76,7 @@ namespace MscrmTools.FluentQueryExpressions.Test
         public void ShouldCompareWhereEqual()
         {
             var query = new Query<Account>()
-                .AddFilters(new Filter().Compare(Account.Fields.NumberOfEmployees).Equals(Account.Fields.Revenue));
+                .AddFilters(new Filter().Compare(Account.Fields.NumberOfEmployees).Equal(Account.Fields.Revenue));
 
             Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);
             Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().Conditions.First().Operator, ConditionOperator.Equal);
@@ -84,7 +84,7 @@ namespace MscrmTools.FluentQueryExpressions.Test
             Assert.AreEqual(query.QueryExpression.Criteria.Filters.First().Conditions.First().CompareColumns, true);
 
             var query2 = new Query<Account>()
-                .AddFilters(new Filter().Compare(Account.EntityLogicalName, Account.Fields.NumberOfEmployees).Equals(Account.Fields.Revenue));
+                .AddFilters(new Filter().Compare(Account.EntityLogicalName, Account.Fields.NumberOfEmployees).Equal(Account.Fields.Revenue));
 
             Assert.AreEqual(query2.QueryExpression.Criteria.Filters.First().Conditions.First().EntityName, Account.EntityLogicalName);
             Assert.AreEqual(query2.QueryExpression.Criteria.Filters.First().Conditions.First().AttributeName, Account.Fields.NumberOfEmployees);

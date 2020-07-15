@@ -27,7 +27,7 @@ namespace MscrmTools.Shared.AppCode
 
 #if CRMV9
 
-        public T Equals(string attributeName)
+        public T Equal(string attributeName)
         {
             var ce = new ConditionExpression(AttributeName, ConditionOperator.Equal, true, attributeName);
             if (!string.IsNullOrEmpty(EntityName)) ce.EntityName = EntityName;
