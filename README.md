@@ -65,6 +65,17 @@ var lateBoundQuery = new Query("account")
                 
 ```
 
+## Comparing Columns (online only, from 2020 July 1st)
+```
+var earlyBoundQuery = new Query<Account>()
+    .Select(Account.Fields.Name, Account.Fields.AccountNumber)
+    .Compare(Account.Fields.CreatedOn).LessThan(Account.Fields.ModifiedOn);
+
+var lateBoundQuery = new Query("account")
+    .Select("name", "accountnumber")
+    .Compare("createdon").LessThan("modifiedon");
+```
+
 ## Adding link entity
 
 ```
