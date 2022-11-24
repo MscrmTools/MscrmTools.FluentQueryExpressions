@@ -81,7 +81,7 @@ var lateBoundQuery = new Query("account")
 ```
 var earlyBoundQuery = new Query<Account>()
                 .Select(Account.Fields.Name, Account.Fields.AccountNumber)
-                .AddLink<Contact>(new Link(Contact.Fields.ParentCustomerId, Account.Fields.AccountId, JoinOperator.LeftOuter)
+                .AddLink(new Link<Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId, JoinOperator.LeftOuter)
                     .SetAlias("cont")
                     .Select(Contact.Fields.Fullname)
                     .WhereEqual(Contact.Address1_City, "Paris")
