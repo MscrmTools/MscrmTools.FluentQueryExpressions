@@ -33,16 +33,35 @@ namespace MscrmTools.FluentQueryExpressions.Helpers
             return initializer.Members.Select(GetLogicalAttributeName<T>).ToArray();
         }
 
+        public static string GetAttributeName<T>(Expression<Func<T, object>> anonymousTypeInitializer) where T : Entity
+
+        {
+            MemberExpression memberExp = null;
+            if (anonymousTypeInitializer.Body is MemberExpression me)
+            {
+                memberExp = me;
+            }
+            else if (anonymousTypeInitializer.Body is UnaryExpression ue)
+            {
+                memberExp = (MemberExpression)ue.Operand;
+            }
+
+            if (memberExp?.Member == null)
+
+            {
+                throw new ArgumentException("lambda must return an object initializer");
+            }
+
+            // Search for and replace any occurence of Id with the actual Entity's Id
+
+            return memberExp.Member.Name.ToLower();
+        }
+
         /// <summary>
-
         /// Normally just returns the name of the property, in lowercase.  But Id must be looked up via reflection.
-
         /// </summary>
-
         /// <param name="property"></param>
-
         /// <returns></returns>
-
         private static string GetLogicalAttributeName<T>(MemberInfo property) where T : Entity
 
         {
