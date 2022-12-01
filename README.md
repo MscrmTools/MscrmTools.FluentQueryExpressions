@@ -7,14 +7,30 @@ You can rely on :
 - [EarlyBoundGenerator](https://github.com/daryllabar/DLaB.Xrm.XrmToolBoxTools) from Daryl LaBar to create the Early Bound Entities to be used with this project (optional)
 - [LateBoundConstantsGenerator](https://github.com/rappen/LateboundConstantsGenerator) from Jonas Rapp to create Late Bound constants to be used with this projet (optional)
 
+## What's new on version 2
+
+Lambda expressions everywhere for Early Bound queries
+
+No more mix between Late Bound and Early Bound queries
+
+Code is fully documented
+
+Performance optimizations for `GetFirst`, `GetFirstOrDefault`, `GetSingle`, `GetSingleOrDefault`, `GetLast` and `GetLastOrDefault` methods
+
 ## Query properties
 
 ```
-var query = new Query<Account>()
+var earlyBoundQuery = new Query<Account>()
                 .Top(10)
                 .Distinct()
                 .NoLock()
-                .SetPaging(1, 100, true);                
+                .SetPaging(1, 100, true);      
+                
+var lateBoundQuery = new Query("account")
+                .Top(10)
+                .Distinct()
+                .NoLock()
+                .SetPaging(1, 100, true);     
                 
 ```
 
@@ -22,7 +38,7 @@ var query = new Query<Account>()
 
 ```
 var earlyBoundQuery = new Query<Account>()
-                .Select(Account.Fields.Name, Account.Fields.AccountNumber);
+                .Select(a => a.AccountNumber);
                 
 var earlyBoundQuery2 = new Query<Account>()
                 .Select(a => new { a.Name, a.AccountNumber});
@@ -36,8 +52,8 @@ var lateBoundQuery = new Query("account")
 
 ```
 var earlyBoundQuery = new Query<Account>()
-                .Select(Account.Fields.Name, Account.Fields.AccountNumber)
-                .WhereEqual(Account.Address1_City, "Paris");
+                .Select(a => new { a.Name, a.AccountNumber})
+                .WhereEqual(a => a.Address1_City, "Paris");
                 
 var lateBoundQuery = new Query("account")
                 .Select("name", "accountnumber")
@@ -49,16 +65,17 @@ var lateBoundQuery = new Query("account")
 
 ```
 var earlyBoundQuery = new Query<Account>()
-                .Select(Account.Fields.Name, Account.Fields.AccountNumber)
-                .AddFilters(new Filter(LogicalOperator.Or)
-                    .WhereEqual(Account.Address1_City, "Paris")
-                    .WhereEqual(Account.Address1_City, "Nantes")
+                .Select(a => new { a.Name, a.AccountNumber})
+                .AddFilter(f => f
+                    .SetLogicalOperator(LogicalOperator.Or)
+                    .WhereEqual(a => a.Address1_City, "Paris")
+                    .WhereEqual(a => a.Address1_City, "Nantes")
                 );
                 
                 
 var lateBoundQuery = new Query("account")
                 .Select("name", "accountnumber")
-                .AddFilters(new Filter(LogicalOperator.Or)
+                .AddFilter(new Filter(LogicalOperator.Or)
                     .WhereEqual("address1_city", "Paris")
                     .WhereEqual("address1_city", "Nantes")
                 );
@@ -68,8 +85,8 @@ var lateBoundQuery = new Query("account")
 ## Comparing Columns (online only, from 2020 July 1st)
 ```
 var earlyBoundQuery = new Query<Account>()
-    .Select(Account.Fields.Name, Account.Fields.AccountNumber)
-    .Compare(Account.Fields.CreatedOn).LessThan(Account.Fields.ModifiedOn);
+    .Select(a => new { a.Name, a.AccountNumber})
+    .Compare(a => a.CreatedOn).LessThan(a => a.ModifiedOn);
 
 var lateBoundQuery = new Query("account")
     .Select("name", "accountnumber")
@@ -80,17 +97,19 @@ var lateBoundQuery = new Query("account")
 
 ```
 var earlyBoundQuery = new Query<Account>()
-                .Select(Account.Fields.Name, Account.Fields.AccountNumber)
-                .AddLink<Contact>(new Link(Contact.Fields.ParentCustomerId, Account.Fields.AccountId, JoinOperator.LeftOuter)
+                .Select(a => new { a.Name, a.AccountNumber})
+                .AddLink<Contact>(a => a.AccountId, c => c.ParentCustomerId, l => l
                     .SetAlias("cont")
-                    .Select(Contact.Fields.Fullname)
-                    .WhereEqual(Contact.Address1_City, "Paris")
-                    .WhereEqual(Contact.Address1_City, "Nantes")
+                    .Select(c => c.Fullname)
+                    .SetLogicalOperator(LogicalOperator.Or)
+                    .WhereEqual(c => c.Address1_City, "Paris")
+                    .WhereEqual(c => c.Address1_City, "Nantes")
+                    , JoinOperator.LeftOuter)
                 );
                 
                 
 var lateBoundQuery = new Query("account")
-                .Select("name", "accountnumber")
+                 .Select("name", "accountnumber")
                  .AddLink(new Link(Contact.EntityLogicalName, Contact.Fields.ParentCustomerId, Account.Fields.AccountId, JoinOperator.LeftOuter)
                     .SetAlias("cont")
                     .Select("fullname")
@@ -104,13 +123,21 @@ var lateBoundQuery = new Query("account")
 
 ```
 var earlyBoundQuery = new Query<Account>()
-                .Select(Account.Fields.Name, Account.Fields.AccountNumber)
-                .Order(Account.Fields.Name, OrderType.Ascending);
+                .Select(a => new { a.Name, a.AccountNumber})
+                .OrderBy(a => a.Name);
+                
+var earlyBoundQuery2 = new Query<Account>()
+                .Select(a => new { a.Name, a.AccountNumber})
+                .OrderByDescending(a => a.Name);
                 
                 
 var lateBoundQuery = new Query("account")
                 .Select("name", "accountnumber")
-                .Order("name", OrderType.Ascending);
+                .OrderBy("name");
+                
+var lateBoundQuery2 = new Query("account")
+                .Select("name", "accountnumber")
+                .OrderByDescending("name");
                 
 ```
 
