@@ -18,19 +18,29 @@ namespace MscrmTools.FluentQueryExpressions.Helpers
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">lambda must return an object initializer</exception>
         public static string[] GetAttributeNamesArray<T>(Expression<Func<T, object>> anonymousTypeInitializer) where T : Entity
-
         {
-            var initializer = anonymousTypeInitializer.Body as NewExpression;
+            var newInitializer = anonymousTypeInitializer.Body as NewExpression;
+            var memberInitializer = anonymousTypeInitializer.Body as MemberExpression;
+            var unaryInitialiazer = anonymousTypeInitializer.Body as UnaryExpression;
 
-            if (initializer?.Members == null)
+            if (newInitializer?.Members == null && memberInitializer?.Member == null && unaryInitialiazer?.Operand == null)
 
             {
                 throw new ArgumentException("lambda must return an object initializer");
             }
 
-            // Search for and replace any occurence of Id with the actual Entity's Id
-
-            return initializer.Members.Select(GetLogicalAttributeName<T>).ToArray();
+            if (newInitializer?.Members != null)
+            {
+                return newInitializer.Members.Select(GetLogicalAttributeName<T>).ToArray();
+            }
+            else if (memberInitializer?.Member != null)
+            {
+                return new string[] { memberInitializer?.Member.Name.ToLower() };
+            }
+            else
+            {
+                return new string[] { ((MemberExpression)unaryInitialiazer?.Operand).Member.Name.ToLower() };
+            }
         }
 
         public static string GetAttributeName<T>(Expression<Func<T, object>> anonymousTypeInitializer) where T : Entity
