@@ -1,7 +1,7 @@
 # MscrmTools.FluentQueryExpressions
 A library to create QueryExpression the fluent way
 
-[![Build status](https://ci.appveyor.com/api/projects/status/lyre23w2ccnnyayr?svg=true)](https://ci.appveyor.com/project/MscrmTools/mscrmtools-fluentqueryexpressions)
+[![Build status](https://ci.appveyor.com/api/projects/status/lyre23w2ccnnyayr?svg=true)](https://ci.appveyor.com/project/MscrmTools/mscrmtools-fluentqueryexpressions) [![NuGet Badge](https://buildstats.info/nuget/MscrmTools.FluentQueryExpressions)](https://www.nuget.org/packages/MscrmTools.FluentQueryExpressions)
 
 You can rely on :
 - [EarlyBoundGenerator](https://github.com/daryllabar/DLaB.Xrm.XrmToolBoxTools) from Daryl LaBar to create the Early Bound Entities to be used with this project (optional)
