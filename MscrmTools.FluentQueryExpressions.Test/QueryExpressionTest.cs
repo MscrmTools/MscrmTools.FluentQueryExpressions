@@ -4070,6 +4070,13 @@ namespace MscrmTools.FluentQueryExpressions.Test
 
                 Assert.IsNotNull(record);
                 Assert.AreEqual(item2Id, record.Id);
+
+                record = new Query<Account>()
+                    .OrderByDescending(a => a.CreatedOn)
+                    .GetLast(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item2Id, record.Id);
             }
         }
 
@@ -4136,6 +4143,13 @@ namespace MscrmTools.FluentQueryExpressions.Test
                 var record = new Query<Account>()
                     .OrderBy(a => a.CreatedOn)
                     .GetLastOrDefault(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item2Id, record.Id);
+
+                record = new Query<Account>()
+                   .OrderByDescending(a => a.CreatedOn)
+                   .GetLastOrDefault(service);
 
                 Assert.IsNotNull(record);
                 Assert.AreEqual(item2Id, record.Id);

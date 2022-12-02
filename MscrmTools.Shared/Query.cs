@@ -20,8 +20,9 @@ namespace MscrmTools.FluentQueryExpressions
         /// Initialize a new instance of class <see cref="Query"/>
         /// </summary>
         /// <param name="table">Logical name of the table to query</param>
-        public Query(string table) : base(table)
+        public Query(string table) : base()
         {
+            QueryExpression = new QueryExpression(table);
         }
 
         #endregion Constructors
@@ -84,6 +85,18 @@ namespace MscrmTools.FluentQueryExpressions
         {
             QueryExpression.Criteria.FilterOperator = logicalOperator;
             QueryExpression.Criteria.Filters.AddRange(filters.Select(f => f.InnerFilter));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Define the filter operator for the default filter of this query
+        /// </summary>
+        /// <param name="logicalOperator">Logical operator</param>
+        /// <returns>The <see cref="Query"/></returns>
+        public new Query SetLogicalOperator(LogicalOperator logicalOperator)
+        {
+            QueryExpression.Criteria.FilterOperator = logicalOperator;
 
             return this;
         }
@@ -1934,17 +1947,8 @@ namespace MscrmTools.FluentQueryExpressions
         /// </summary>
         public Query()
         {
-            string entityLogicalName = typeof(T).GetField("EntityLogicalName").GetRawConstantValue().ToString();
+            string entityLogicalName = typeof(T).GetField("EntityLogicalName")?.GetRawConstantValue().ToString();
             QueryExpression = new QueryExpression(entityLogicalName);
-        }
-
-        /// <summary>
-        /// Initialize a new instance of class <see cref="Query"/>
-        /// <paramref name="table">Logical name of the table to query</paramref>
-        /// </summary>
-        protected Query(string table)
-        {
-            QueryExpression = new QueryExpression(table.ToLower());
         }
 
         #endregion Constructors
