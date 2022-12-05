@@ -1,4 +1,4 @@
-﻿using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using MscrmTools.FluentQueryExpressions.Helpers;
 using System;
@@ -4346,6 +4346,8 @@ namespace MscrmTools.FluentQueryExpressions
                     .ToList();
             }
 
+            var tmpPagingNumber = QueryExpression.PageInfo.PageNumber;
+            var tmpPagingCookie = QueryExpression.PageInfo.PagingCookie;
             EntityCollection ec;
             var list = new List<T>();
             do
@@ -4357,6 +4359,8 @@ namespace MscrmTools.FluentQueryExpressions
                 NextPage(ec.PagingCookie);
             } while (ec.MoreRecords);
 
+            QueryExpression.PageInfo.PageNumber = tmpPagingNumber;
+            QueryExpression.PageInfo.PagingCookie = tmpPagingCookie;
             return list;
         }
 
