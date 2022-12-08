@@ -2155,17 +2155,17 @@ namespace MscrmTools.FluentQueryExpressions
         /// Add a related table in the query
         /// </summary>
         /// <typeparam name="U">Type of the related table</typeparam>
-        /// <param name="fromAttribute">Column from the source table</param>
-        /// <param name="toAttribute">Column from the related table</param>
+        /// <param name="fromColumn">Column from the <typeparamref name="T"/> table</param>
+        /// <param name="toColumn">Column from the <typeparamref name="U"/> table</param>
         /// <param name="link">Link to the related table</param>
         /// <param name="jo">Join operator for the link</param>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Query<T> AddLink<U>(Expression<Func<T, object>> fromAttribute, Expression<Func<U, object>> toAttribute, Func<Link<T, U>, Link<T, U>> link, JoinOperator jo = JoinOperator.Inner)
+        public Query<T> AddLink<U>(Expression<Func<T, object>> fromColumn, Expression<Func<U, object>> toColumn, Func<Link<T, U>, Link<T, U>> link, JoinOperator jo = JoinOperator.Inner)
             where U : Entity
         {
             string fromEntity = typeof(T).GetField("EntityLogicalName").GetRawConstantValue().ToString();
-            string fromAttr = AnonymousTypeHelper.GetAttributeName(fromAttribute);
-            string toAttr = AnonymousTypeHelper.GetAttributeName(toAttribute);
+            string fromAttr = AnonymousTypeHelper.GetAttributeName(fromColumn);
+            string toAttr = AnonymousTypeHelper.GetAttributeName(toColumn);
             string toEntity = typeof(U).GetField("EntityLogicalName").GetRawConstantValue().ToString();
 
             var le = new Link<T, U>(fromEntity, toEntity, fromAttr, toAttr, jo);
@@ -2199,20 +2199,20 @@ namespace MscrmTools.FluentQueryExpressions
         }
 
         /// <summary>
-        ///
+        /// Add a related table in the query
         /// </summary>
         /// <typeparam name="U"></typeparam>
-        /// <param name="fromAttribute">Column from the source table></param>
-        /// <param name="toAttribute">Column from the related table</param>
+        /// <param name="fromColumn">Column from the <typeparamref name="T"/> table</param>
+        /// <param name="toColumn">Column from the <typeparamref name="U"/> table</param>
         /// <param name="jo">Join operator for the link</param>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Query<T> AddLink<U>(Expression<Func<T, object>> fromAttribute, Expression<Func<U, object>> toAttribute, JoinOperator jo = JoinOperator.Inner)
+        public Query<T> AddLink<U>(Expression<Func<T, object>> fromColumn, Expression<Func<U, object>> toColumn, JoinOperator jo = JoinOperator.Inner)
             where U : Entity
 
         {
             string fromEntity = typeof(T).GetField("EntityLogicalName").GetRawConstantValue().ToString();
-            string fromAttr = AnonymousTypeHelper.GetAttributeName(fromAttribute);
-            string toAttr = AnonymousTypeHelper.GetAttributeName(toAttribute);
+            string fromAttr = AnonymousTypeHelper.GetAttributeName(fromColumn);
+            string toAttr = AnonymousTypeHelper.GetAttributeName(toColumn);
             string toEntity = typeof(U).GetField("EntityLogicalName").GetRawConstantValue().ToString();
 
             var le = new Link<T, U>(fromEntity, toEntity, fromAttr, toAttr, jo);

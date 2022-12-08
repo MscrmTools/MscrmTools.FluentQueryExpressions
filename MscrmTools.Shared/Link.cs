@@ -1296,9 +1296,9 @@ namespace MscrmTools.FluentQueryExpressions
         }
 
         /// <summary>Adds a related table as a link.</summary>
-        /// <param name="sourceColumn">Logical name of the source column in the relationship</param>
-        /// <param name="targetColumn">Logical name of the target column in the relationship</param>
-        /// <param name="link">The link as lambda expression</param>
+        /// <param name="sourceColumn">Column from the <typeparamref name="T"/> table</param>
+        /// <param name="targetColumn">Column from the <typeparamref name="U"/> table</param>
+        /// /// <param name="link">The link as lambda expression</param>
         /// <param name="jo">The join operator.</param>
         /// <returns>This <see cref="Link{T, U}"></see></returns>
         public Link<T, U> AddLink<V>(Expression<Func<U, object>> sourceColumn, Expression<Func<V, object>> targetColumn, Func<Link<U, V>, Link<U, V>> link, JoinOperator jo = JoinOperator.Inner) where V : Entity
@@ -1335,8 +1335,8 @@ namespace MscrmTools.FluentQueryExpressions
         }
 
         /// <summary>Adds a related table as a link.</summary>
-        /// <param name="sourceColumn">Logical name of the source column in the relationship</param>
-        /// <param name="targetColumn">Logical name of the target column in the relationship</param>
+        /// <param name="sourceColumn">Column from the <typeparamref name="T"/> table</param>
+        /// <param name="targetColumn">Column from the <typeparamref name="U"/> table</param>
         /// <param name="jo">The join operator.</param>
         /// <returns>This <see cref="Link{T, U}"></see></returns>
         public Link<T, U> AddLink<V>(Expression<Func<U, object>> sourceColumn, Expression<Func<V, object>> targetColumn, JoinOperator jo = JoinOperator.Inner) where V : Entity
