@@ -17,6 +17,8 @@ Code is fully documented
 
 Performance optimizations for `GetFirst`, `GetFirstOrDefault`, `GetSingle`, `GetSingleOrDefault`, `GetLast` and `GetLastOrDefault` methods
 
+⚠ Not compatible with v1. v1 was allowing mix of Late Bound and Early Bound entities, which is not the case with this version
+
 ## Query properties
 
 ```
