@@ -26,13 +26,13 @@ var earlyBoundQuery = new Query<Account>()
                 .Top(10)
                 .Distinct()
                 .NoLock()
-                .SetPaging(1, 100, true);      
+                .SetPagingInfo(1, 100, true);      
                 
 var lateBoundQuery = new Query("account")
                 .Top(10)
                 .Distinct()
                 .NoLock()
-                .SetPaging(1, 100, true);     
+                .SetPagingInfo(1, 100, true);     
                 
 ```
 
