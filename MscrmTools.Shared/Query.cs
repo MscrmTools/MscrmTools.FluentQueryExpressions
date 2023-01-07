@@ -2034,6 +2034,23 @@ namespace MscrmTools.FluentQueryExpressions
             return this;
         }
 
+        /// <summary>
+        /// Specifies the list of columns the query should return
+        /// </summary>
+        /// <param name="columns">Columns to return</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> Select(params string[] columns)
+        {
+            if (columns.Length == 0)
+            {
+                QueryExpression.ColumnSet = new ColumnSet();
+            }
+
+            QueryExpression.ColumnSet.AddColumns(columns);
+
+            return this;
+        }
+
         #endregion Attributes
 
         #region Filters
