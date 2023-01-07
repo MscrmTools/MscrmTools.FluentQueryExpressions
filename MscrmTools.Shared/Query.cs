@@ -1968,9 +1968,9 @@ namespace MscrmTools.FluentQueryExpressions
         /// Specifies that the <c>QueryExpression</c> should retrieve distinct data
         /// </summary>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Query<T> Distinct()
+        public Query<T> Distinct(bool distinct = true)
         {
-            QueryExpression.Distinct = true;
+            QueryExpression.Distinct = distinct;
 
             return this;
         }
@@ -1979,9 +1979,9 @@ namespace MscrmTools.FluentQueryExpressions
         /// Specifies that the <c>QueryExpression</c> should not lock the table when retrieving data
         /// </summary>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Query<T> NoLock()
+        public Query<T> NoLock(bool nolock = true)
         {
-            QueryExpression.NoLock = true;
+            QueryExpression.NoLock = nolock;
 
             return this;
         }
