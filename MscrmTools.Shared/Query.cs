@@ -27,27 +27,6 @@ namespace MscrmTools.FluentQueryExpressions
 
         #endregion Constructors
 
-        #region Attributes
-
-        /// <summary>
-        /// Specifies the list of columns the query should return
-        /// </summary>
-        /// <param name="columns">Columns to return</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query Select(params string[] columns)
-        {
-            if (columns.Length == 0)
-            {
-                QueryExpression.ColumnSet = new ColumnSet();
-            }
-
-            QueryExpression.ColumnSet.AddColumns(columns);
-
-            return this;
-        }
-
-        #endregion Attributes
-
         #region Filters
 
         /// <summary>
@@ -171,1767 +150,6 @@ namespace MscrmTools.FluentQueryExpressions
 #endif
 
         #endregion Columns Comparer
-
-        #region Order
-
-        /// <summary>
-        /// Order the result of the query by the <paramref name="column"/>
-        /// </summary>
-        /// <param name="column">Column to use to sort results of the query</param>
-        /// <returns>The <see cref="Query"/></returns>
-        public Query OrderBy(string column)
-        {
-            QueryExpression.AddOrder(column, OrderType.Ascending);
-            return this;
-        }
-
-        /// <summary>
-        /// Order the result of the query by the <paramref name="column"/> descending
-        /// </summary>
-        /// <param name="column">Column to use to sort results of the query</param>
-        /// <returns>The <see cref="Query"/></returns>
-        public Query OrderByDescending(string column)
-        {
-            QueryExpression.AddOrder(column, OrderType.Descending);
-            return this;
-        }
-
-        #endregion Order
-
-        #region Conditions
-
-        /// <summary>Adds a condition where <paramref name="column"/> respects the <paramref name="conditionOperator"/> and the <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="conditionOperator">The condition operator.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query Where(string column, ConditionOperator conditionOperator, params object[] values)
-        {
-            QueryExpression.Criteria.AddCondition(column, conditionOperator, values);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> respects the <paramref name="conditionOperator"/> and the <paramref name="values"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="conditionOperator">The condition operator.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query Where(string tableAlias, string column, ConditionOperator conditionOperator, params object[] values)
-        {
-            QueryExpression.Criteria.AddCondition(tableAlias, column, conditionOperator, values);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> is above <paramref name="value"/> in the hierarchy</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereAbove(string column, Guid value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Above, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Above, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> is above or equals <paramref name="value"/> in the hierarchy</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereAboveOrEqual(string column, object value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.AboveOrEqual, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.AboveOrEqual, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value begins with <paramref name="value"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereBeginsWith(string column, string value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.BeginsWith, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.BeginsWith, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is between <paramref name="value1"/> and <paramref name="value2"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value1">Value 1</param>
-        /// <param name="value2">Value 2</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereBetween(string column, object value1, object value2, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Between, value1, value2);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Between, value1, value2);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value contains <paramref name="value"/></summary>
-        /// <remarks>You must use the Contains operator for only those attributes that are enabled for full-text indexing.
-        /// Otherwise, you will receive a generic SQL error message while retrieving data. In a Microsoft Dynamics 365 default
-        /// installation, only the attributes of the KBArticle (article) entity are enabled for full-text indexing.</remarks>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">Value</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereContains(string column, string value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Contains, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Contains, value);
-            }
-
-            return this;
-        }
-
-#if CRMV9
-
-        /// <summary>Adds a condition where <paramref name="column"/> contains <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">Values to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereContainValues(string column, params object[] values)
-        {
-            QueryExpression.Criteria.AddCondition(column, ConditionOperator.ContainValues, values);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> contains <paramref name="values"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">Values to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereContainValues(string tableAlias, string column, params object[] values)
-        {
-            QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ContainValues, values);
-
-            return this;
-        }
-
-#endif
-
-        /// <summary>Adds a condition where <paramref name="column"/> value does not begin with <paramref name="value"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereDoesNotBeginWith(string column, object value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.DoesNotBeginWith, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.DoesNotBeginWith, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value does not contain <paramref name="value"/></summary>
-        /// <remarks>You must use the Contains operator for only those attributes that are enabled for full-text indexing.
-        /// Otherwise, you will receive a generic SQL error message while retrieving data. In a Microsoft Dynamics 365 default
-        /// installation, only the attributes of the KBArticle (article) entity are enabled for full-text indexing.</remarks>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">Value</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereDoesNotContain(string column, object value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.DoesNotContain, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.DoesNotContain, value);
-            }
-
-            return this;
-        }
-
-#if CRMV9
-        /// <summary>Adds a condition where <paramref name="column"/> does not contain <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">Values to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereDoesNotContainValues(string column, params object[] values)
-        {
-            QueryExpression.Criteria.AddCondition(column, ConditionOperator.DoesNotContainValues, values);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> does not contain <paramref name="values"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">Values to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereDoesNotContainValues(string tableAlias, string column, params object[] values)
-        {
-            QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.DoesNotContainValues, values);
-
-            return this;
-        }
-
-#endif
-        /// <summary>Adds a condition where <paramref name="column"/> value does not end with <paramref name="value"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereDoesNotEndWith(string column, string value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.DoesNotEndWith, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.DoesNotEndWith, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value ends with <paramref name="value"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereEndsWith(string column, object value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EndsWith, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EndsWith, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value equals <paramref name="value"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereEqual(string column, object value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Equal, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Equal, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user business unit</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereEqualBusinessId(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualBusinessId);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualBusinessId);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user unique identifier</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereEqualUserId(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserId);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualUserId);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user language</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereEqualUserLanguage(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserLanguage);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualUserLanguage);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user or their reporting hierarchy</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereEqualUserOrUserHierarchy(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserOrUserHierarchy);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualUserOrUserHierarchy);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user and his teams or their reporting hierarchy and their teams</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereEqualUserOrUserHierarchyAndTeams(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserOrUserHierarchyAndTeams);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column,
-                    ConditionOperator.EqualUserOrUserHierarchyAndTeams);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user or a team the current user is member of</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereEqualUserOrUserTeams(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserOrUserTeams);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualUserOrUserTeams);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> equals a team the current user is member of</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereEqualUserTeams(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserTeams);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualUserTeams);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> is greater or equal to <paramref name="value"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The value</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereGreaterEqual(string column, object value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.GreaterEqual, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.GreaterEqual, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> is greater than <paramref name="value"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The value</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereGreaterThan(string column, object value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.GreaterThan, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.GreaterThan, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The value</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereIn(string column, IList values)
-        {
-            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.In, values));
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The value</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereIn(string tableAlias, string column, IList values)
-        {
-            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(tableAlias, column, ConditionOperator.In, values));
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The value</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereIn(string column, params object[] values)
-        {
-            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.In, values));
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The value</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereIn(string tableAlias, string column, params object[] values)
-        {
-            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(tableAlias, column, ConditionOperator.In, values));
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The value</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereInFiscalPeriod(string column, object value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.InFiscalPeriod, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.InFiscalPeriod, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="period">The period</param>
-        /// <param name="year">The year</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereInFiscalPeriodAndYear(string column, int period, int year, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.InFiscalPeriodAndYear, period, year);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.InFiscalPeriodAndYear, period, year);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="year">The year</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereInFiscalYear(string column, int year, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.InFiscalYear, year);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.InFiscalYear, year);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in or after the curent fiscal period</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="period">The period</param>
-        /// <param name="year">The year</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereInOrAfterFiscalPeriodAndYear(string column, int period, int year, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.InOrAfterFiscalPeriodAndYear, period, year);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.InOrAfterFiscalPeriodAndYear,
-                    period, year);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in or before the curent fiscal period</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="period">The period</param>
-        /// <param name="year">The year</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereInOrBeforeFiscalPeriodAndYear(string column, int period, int year, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.InOrBeforeFiscalPeriodAndYear, period, year);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.InOrBeforeFiscalPeriodAndYear,
-                    period, year);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on last 7 days</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLast7Days(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Last7Days);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Last7Days);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last fiscal period</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastFiscalPeriod(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastFiscalPeriod);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastFiscalPeriod);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last fiscal year</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastFiscalYear(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastFiscalYear);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastFiscalYear);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last month</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastMonth(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastMonth);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastMonth);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last week</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastWeek(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastWeek);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastWeek);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> days</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of days to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastXDays(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXDays, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXDays, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> fiscal periods</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of fiscal periods to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastXFiscalPeriods(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXFiscalPeriods, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXFiscalPeriods, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> fiscal years</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of years to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastXFiscalYears(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXFiscalYears, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXFiscalYears, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> hours</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of hours to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastXHours(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXHours, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXHours, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> months</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of months to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastXMonths(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXMonths, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXMonths, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> months</summary>
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> weeks</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of weeks to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastXWeeks(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXWeeks, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXWeeks, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> years</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of years to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastXYears(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXYears, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXYears, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last year</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLastYear(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastYear);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastYear);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is less or equal to <paramref name="value"/> </summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The value</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLessEqual(string column, object value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LessEqual, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LessEqual, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is less than <paramref name="value"/> </summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The value</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLessThan(string column, object value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LessThan, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LessThan, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value matches the specifed <paramref name="pattern"/> </summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="pattern">The pattern</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereLike(string column, string pattern, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Like, pattern);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Like, pattern);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is found in the specifed <paramref name="bitmask"/> </summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="bitmask">The bitmask</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereMask(string column, object bitmask, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Mask, bitmask);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Mask, bitmask);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on next 7 days</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNext7Days(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Next7Days);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Next7Days);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on next fiscal period</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextFiscalPeriod(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextFiscalPeriod);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextFiscalPeriod);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on next fiscal year</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextFiscalYear(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextFiscalYear);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextFiscalYear);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on next month</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextMonth(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextMonth);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextMonth);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on next week</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextWeek(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextWeek);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextWeek);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> days</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of days to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextXDays(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXDays, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXDays, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> fiscal periods</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of fiscal perdiods to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextXFiscalPeriods(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXFiscalPeriods, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXFiscalPeriods, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> fiscal years</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of fiscal years to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextXFiscalYears(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXFiscalYears, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXFiscalYears, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> hours</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of hours to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextXHours(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXHours, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXHours, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> months</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of months to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextXMonths(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXMonths, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXMonths, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> weeks</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of weeks to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextXWeeks(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXWeeks, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXWeeks, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> years</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of years to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextXYears(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXYears, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXYears, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next year</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNextYear(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextYear);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextYear);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is not between <paramref name="value1"/> and <paramref name="value2"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value1">Value 1</param>
-        /// <param name="value2">Value 2</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotBetween(string column, object value1, object value2, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotBetween, value1, value2);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotBetween, value1, value2);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value does not equal <paramref name="value"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotEqual(string column, object value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotEqual, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotEqual, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> does not equal current user business unit</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotEqualBusinessId(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotEqualBusinessId);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotEqualBusinessId);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> does not equal current user unique identifier</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotEqualUserId(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotEqualUserId);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotEqualUserId);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The values</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotIn(string tableAlias, string column, IList values)
-        {
-            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(tableAlias, column, ConditionOperator.NotIn, values));
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The values</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotIn(string column, IList values)
-        {
-            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.NotIn, values));
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The values</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotIn(string column, params object[] values)
-        {
-            QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotIn, values);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The values</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotIn(string tableAlias, string column, params object[] values)
-        {
-            QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotIn, values);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value does not match the specifed <paramref name="pattern"/> </summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="pattern">The pattern</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotLike(string column, string pattern, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotLike, pattern);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotLike, pattern);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is not found in the specifed <paramref name="bitmask"/> </summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="bitmask">The bitmask</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotMask(string column, object bitmask, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotMask, bitmask);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotMask, bitmask);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is not null</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotNull(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotNull);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotNull);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is not on the specifed <paramref name="datetime"/> </summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="datetime">The date</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotOn(string column, DateTime datetime, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotOn, datetime);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotOn, datetime);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is above <paramref name="value"/> in the hierarchy </summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The date</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNotUnder(string column, Guid value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotUnder, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotUnder, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> does not contain data</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereNull(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Null);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Null);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> days</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of days to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereOlderThanXDays(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXDays, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXDays, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> hours</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of hours to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereOlderThanXHours(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXHours, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXHours, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> minutes</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of minutes to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereOlderThanXMinutes(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXMinutes, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXMinutes, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> months</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of months to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereOlderThanXMonths(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXMonths, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXMonths, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> weeks</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of weeks to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereOlderThanXWeeks(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXWeeks, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXWeeks, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> years</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of years to evaluate</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereOlderThanXYears(string column, int x, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXYears, x);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXYears, x);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the specifed <paramref name="datetime"/> </summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="datetime">The date</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereOn(string column, DateTime datetime, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.On, datetime);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.On, datetime);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on or after the specifed <paramref name="datetime"/> </summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="datetime">The date</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereOnOrAfter(string column, DateTime datetime, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OnOrAfter, datetime);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OnOrAfter, datetime);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on or before the specifed <paramref name="datetime"/> </summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="datetime">The date</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereOnOrBefore(string column, DateTime datetime, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OnOrBefore, datetime);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OnOrBefore, datetime);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current fiscal period</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereThisFiscalPeriod(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ThisFiscalPeriod);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.ThisFiscalPeriod);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current fiscal year</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereThisFiscalYear(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ThisFiscalYear);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.ThisFiscalYear);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current month</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereThisMonth(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ThisMonth);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.ThisMonth);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current week</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereThisWeek(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ThisWeek);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.ThisWeek);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current year</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereThisYear(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ThisYear);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.ThisYear);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current day</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereToday(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Today);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Today);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is tomorrow</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereTomorrow(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Tomorrow);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Tomorrow);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> is under <paramref name="value"/> in the hierarchy</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereUnder(string column, Guid value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Under, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Under, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> is under or equals <paramref name="value"/> in the hierarchy</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereUnderOrEqual(string column, Guid value, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.UnderOrEqual, value);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.UnderOrEqual, value);
-            }
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is yesterday</summary>
-        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Query{T}"/></returns>
-        public Query WhereYesterday(string column, string tableAlias = null)
-        {
-            if (tableAlias != null)
-            {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Yesterday);
-            }
-            else
-            {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Yesterday);
-            }
-
-            return this;
-        }
-
-        #endregion Conditions
     }
 
     /// <summary>
@@ -2265,6 +483,28 @@ namespace MscrmTools.FluentQueryExpressions
             return this;
         }
 
+        /// <summary>
+        /// Order the result of the query by the <paramref name="column"/>
+        /// </summary>
+        /// <param name="column">Column to use to sort results of the query</param>
+        /// <returns>The <see cref="Query"/></returns>
+        public Query<T> OrderBy(string column)
+        {
+            QueryExpression.AddOrder(column, OrderType.Ascending);
+            return this;
+        }
+
+        /// <summary>
+        /// Order the result of the query by the <paramref name="column"/> descending
+        /// </summary>
+        /// <param name="column">Column to use to sort results of the query</param>
+        /// <returns>The <see cref="Query"/></returns>
+        public Query<T> OrderByDescending(string column)
+        {
+            QueryExpression.AddOrder(column, OrderType.Descending);
+            return this;
+        }
+
         #endregion Order
 
         #region PagingInfo
@@ -2304,6 +544,1737 @@ namespace MscrmTools.FluentQueryExpressions
         #endregion PagingInfo
 
         #region Conditions
+
+        /// <summary>Adds a condition where <paramref name="column"/> respects the <paramref name="conditionOperator"/> and the <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="conditionOperator">The condition operator.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> Where(string column, ConditionOperator conditionOperator, params object[] values)
+        {
+            QueryExpression.Criteria.AddCondition(column, conditionOperator, values);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> respects the <paramref name="conditionOperator"/> and the <paramref name="values"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="conditionOperator">The condition operator.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> Where(string tableAlias, string column, ConditionOperator conditionOperator, params object[] values)
+        {
+            QueryExpression.Criteria.AddCondition(tableAlias, column, conditionOperator, values);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> is above <paramref name="value"/> in the hierarchy</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereAbove(string column, Guid value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Above, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Above, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> is above or equals <paramref name="value"/> in the hierarchy</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereAboveOrEqual(string column, object value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.AboveOrEqual, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.AboveOrEqual, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value begins with <paramref name="value"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereBeginsWith(string column, string value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.BeginsWith, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.BeginsWith, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is between <paramref name="value1"/> and <paramref name="value2"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value1">Value 1</param>
+        /// <param name="value2">Value 2</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereBetween(string column, object value1, object value2, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Between, value1, value2);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Between, value1, value2);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value contains <paramref name="value"/></summary>
+        /// <remarks>You must use the Contains operator for only those attributes that are enabled for full-text indexing.
+        /// Otherwise, you will receive a generic SQL error message while retrieving data. In a Microsoft Dynamics 365 default
+        /// installation, only the attributes of the KBArticle (article) entity are enabled for full-text indexing.</remarks>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">Value</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereContains(string column, string value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Contains, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Contains, value);
+            }
+
+            return this;
+        }
+
+#if CRMV9
+
+        /// <summary>Adds a condition where <paramref name="column"/> contains <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">Values to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereContainValues(string column, params object[] values)
+        {
+            QueryExpression.Criteria.AddCondition(column, ConditionOperator.ContainValues, values);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> contains <paramref name="values"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">Values to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereContainValues(string tableAlias, string column, params object[] values)
+        {
+            QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ContainValues, values);
+
+            return this;
+        }
+
+#endif
+
+        /// <summary>Adds a condition where <paramref name="column"/> value does not begin with <paramref name="value"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereDoesNotBeginWith(string column, object value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.DoesNotBeginWith, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.DoesNotBeginWith, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value does not contain <paramref name="value"/></summary>
+        /// <remarks>You must use the Contains operator for only those attributes that are enabled for full-text indexing.
+        /// Otherwise, you will receive a generic SQL error message while retrieving data. In a Microsoft Dynamics 365 default
+        /// installation, only the attributes of the KBArticle (article) entity are enabled for full-text indexing.</remarks>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">Value</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereDoesNotContain(string column, object value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.DoesNotContain, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.DoesNotContain, value);
+            }
+
+            return this;
+        }
+
+#if CRMV9
+        /// <summary>Adds a condition where <paramref name="column"/> does not contain <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">Values to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereDoesNotContainValues(string column, params object[] values)
+        {
+            QueryExpression.Criteria.AddCondition(column, ConditionOperator.DoesNotContainValues, values);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> does not contain <paramref name="values"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">Values to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereDoesNotContainValues(string tableAlias, string column, params object[] values)
+        {
+            QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.DoesNotContainValues, values);
+
+            return this;
+        }
+
+#endif
+        /// <summary>Adds a condition where <paramref name="column"/> value does not end with <paramref name="value"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereDoesNotEndWith(string column, string value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.DoesNotEndWith, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.DoesNotEndWith, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value ends with <paramref name="value"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereEndsWith(string column, object value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EndsWith, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EndsWith, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value equals <paramref name="value"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereEqual(string column, object value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Equal, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Equal, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user business unit</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereEqualBusinessId(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualBusinessId);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualBusinessId);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user unique identifier</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereEqualUserId(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserId);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualUserId);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user language</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereEqualUserLanguage(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserLanguage);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualUserLanguage);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user or their reporting hierarchy</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereEqualUserOrUserHierarchy(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserOrUserHierarchy);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualUserOrUserHierarchy);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user and his teams or their reporting hierarchy and their teams</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereEqualUserOrUserHierarchyAndTeams(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserOrUserHierarchyAndTeams);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column,
+                    ConditionOperator.EqualUserOrUserHierarchyAndTeams);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user or a team the current user is member of</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereEqualUserOrUserTeams(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserOrUserTeams);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualUserOrUserTeams);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> equals a team the current user is member of</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereEqualUserTeams(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.EqualUserTeams);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.EqualUserTeams);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> is greater or equal to <paramref name="value"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The value</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereGreaterEqual(string column, object value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.GreaterEqual, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.GreaterEqual, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> is greater than <paramref name="value"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The value</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereGreaterThan(string column, object value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.GreaterThan, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.GreaterThan, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The value</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereIn(string column, IList values)
+        {
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.In, values));
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The value</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereIn(string tableAlias, string column, IList values)
+        {
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(tableAlias, column, ConditionOperator.In, values));
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The value</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereIn(string column, params object[] values)
+        {
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.In, values));
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The value</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereIn(string tableAlias, string column, params object[] values)
+        {
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(tableAlias, column, ConditionOperator.In, values));
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The value</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereInFiscalPeriod(string column, object value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.InFiscalPeriod, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.InFiscalPeriod, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="period">The period</param>
+        /// <param name="year">The year</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereInFiscalPeriodAndYear(string column, int period, int year, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.InFiscalPeriodAndYear, period, year);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.InFiscalPeriodAndYear, period, year);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="year">The year</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereInFiscalYear(string column, int year, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.InFiscalYear, year);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.InFiscalYear, year);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in or after the curent fiscal period</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="period">The period</param>
+        /// <param name="year">The year</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereInOrAfterFiscalPeriodAndYear(string column, int period, int year, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.InOrAfterFiscalPeriodAndYear, period, year);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.InOrAfterFiscalPeriodAndYear,
+                    period, year);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in or before the curent fiscal period</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="period">The period</param>
+        /// <param name="year">The year</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereInOrBeforeFiscalPeriodAndYear(string column, int period, int year, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.InOrBeforeFiscalPeriodAndYear, period, year);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.InOrBeforeFiscalPeriodAndYear,
+                    period, year);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on last 7 days</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLast7Days(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Last7Days);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Last7Days);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last fiscal period</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastFiscalPeriod(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastFiscalPeriod);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastFiscalPeriod);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last fiscal year</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastFiscalYear(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastFiscalYear);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastFiscalYear);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last month</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastMonth(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastMonth);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastMonth);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last week</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastWeek(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastWeek);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastWeek);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> days</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of days to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastXDays(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXDays, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXDays, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> fiscal periods</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of fiscal periods to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastXFiscalPeriods(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXFiscalPeriods, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXFiscalPeriods, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> fiscal years</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of years to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastXFiscalYears(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXFiscalYears, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXFiscalYears, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> hours</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of hours to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastXHours(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXHours, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXHours, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> months</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of months to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastXMonths(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXMonths, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXMonths, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> months</summary>
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> weeks</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of weeks to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastXWeeks(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXWeeks, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXWeeks, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> years</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of years to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastXYears(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastXYears, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastXYears, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last year</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLastYear(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LastYear);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LastYear);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is less or equal to <paramref name="value"/> </summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The value</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLessEqual(string column, object value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LessEqual, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LessEqual, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is less than <paramref name="value"/> </summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The value</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLessThan(string column, object value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LessThan, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LessThan, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value matches the specifed <paramref name="pattern"/> </summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="pattern">The pattern</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereLike(string column, string pattern, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Like, pattern);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Like, pattern);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is found in the specifed <paramref name="bitmask"/> </summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="bitmask">The bitmask</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereMask(string column, object bitmask, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Mask, bitmask);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Mask, bitmask);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on next 7 days</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNext7Days(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Next7Days);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Next7Days);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on next fiscal period</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextFiscalPeriod(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextFiscalPeriod);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextFiscalPeriod);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on next fiscal year</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextFiscalYear(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextFiscalYear);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextFiscalYear);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on next month</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextMonth(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextMonth);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextMonth);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on next week</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextWeek(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextWeek);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextWeek);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> days</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of days to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextXDays(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXDays, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXDays, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> fiscal periods</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of fiscal perdiods to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextXFiscalPeriods(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXFiscalPeriods, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXFiscalPeriods, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> fiscal years</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of fiscal years to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextXFiscalYears(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXFiscalYears, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXFiscalYears, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> hours</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of hours to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextXHours(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXHours, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXHours, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> months</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of months to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextXMonths(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXMonths, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXMonths, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> weeks</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of weeks to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextXWeeks(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXWeeks, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXWeeks, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> years</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of years to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextXYears(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextXYears, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextXYears, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next year</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNextYear(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NextYear);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NextYear);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is not between <paramref name="value1"/> and <paramref name="value2"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value1">Value 1</param>
+        /// <param name="value2">Value 2</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotBetween(string column, object value1, object value2, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotBetween, value1, value2);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotBetween, value1, value2);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value does not equal <paramref name="value"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotEqual(string column, object value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotEqual, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotEqual, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> does not equal current user business unit</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotEqualBusinessId(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotEqualBusinessId);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotEqualBusinessId);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> does not equal current user unique identifier</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotEqualUserId(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotEqualUserId);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotEqualUserId);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The values</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotIn(string tableAlias, string column, IList values)
+        {
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(tableAlias, column, ConditionOperator.NotIn, values));
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The values</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotIn(string column, IList values)
+        {
+            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.NotIn, values));
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The values</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotIn(string column, params object[] values)
+        {
+            QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotIn, values);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The values</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotIn(string tableAlias, string column, params object[] values)
+        {
+            QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotIn, values);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value does not match the specifed <paramref name="pattern"/> </summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="pattern">The pattern</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotLike(string column, string pattern, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotLike, pattern);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotLike, pattern);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is not found in the specifed <paramref name="bitmask"/> </summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="bitmask">The bitmask</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotMask(string column, object bitmask, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotMask, bitmask);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotMask, bitmask);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is not null</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotNull(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotNull);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotNull);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is not on the specifed <paramref name="datetime"/> </summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="datetime">The date</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotOn(string column, DateTime datetime, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotOn, datetime);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotOn, datetime);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is above <paramref name="value"/> in the hierarchy </summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The date</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNotUnder(string column, Guid value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.NotUnder, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.NotUnder, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> does not contain data</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereNull(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Null);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Null);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> days</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of days to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereOlderThanXDays(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXDays, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXDays, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> hours</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of hours to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereOlderThanXHours(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXHours, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXHours, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> minutes</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of minutes to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereOlderThanXMinutes(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXMinutes, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXMinutes, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> months</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of months to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereOlderThanXMonths(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXMonths, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXMonths, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> weeks</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of weeks to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereOlderThanXWeeks(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXWeeks, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXWeeks, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> years</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of years to evaluate</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereOlderThanXYears(string column, int x, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OlderThanXYears, x);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OlderThanXYears, x);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the specifed <paramref name="datetime"/> </summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="datetime">The date</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereOn(string column, DateTime datetime, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.On, datetime);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.On, datetime);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on or after the specifed <paramref name="datetime"/> </summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="datetime">The date</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereOnOrAfter(string column, DateTime datetime, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OnOrAfter, datetime);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OnOrAfter, datetime);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on or before the specifed <paramref name="datetime"/> </summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="datetime">The date</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereOnOrBefore(string column, DateTime datetime, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.OnOrBefore, datetime);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.OnOrBefore, datetime);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current fiscal period</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereThisFiscalPeriod(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ThisFiscalPeriod);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.ThisFiscalPeriod);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current fiscal year</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereThisFiscalYear(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ThisFiscalYear);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.ThisFiscalYear);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current month</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereThisMonth(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ThisMonth);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.ThisMonth);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current week</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereThisWeek(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ThisWeek);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.ThisWeek);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current year</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereThisYear(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.ThisYear);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.ThisYear);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current day</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereToday(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Today);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Today);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is tomorrow</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereTomorrow(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Tomorrow);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Tomorrow);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> is under <paramref name="value"/> in the hierarchy</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereUnder(string column, Guid value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Under, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Under, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> is under or equals <paramref name="value"/> in the hierarchy</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereUnderOrEqual(string column, Guid value, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.UnderOrEqual, value);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.UnderOrEqual, value);
+            }
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is yesterday</summary>
+        /// <param name="tableAlias">Logical name of the related table where to apply the condition</param>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> WhereYesterday(string column, string tableAlias = null)
+        {
+            if (tableAlias != null)
+            {
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Yesterday);
+            }
+            else
+            {
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Yesterday);
+            }
+
+            return this;
+        }
 
         /// <summary>Adds a condition where <paramref name="column"/> respects the <paramref name="conditionOperator"/> and the <paramref name="values"/></summary>
         /// <param name="column">Logical name of the column</param>

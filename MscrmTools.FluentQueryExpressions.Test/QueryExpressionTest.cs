@@ -18,51 +18,9 @@ namespace MscrmTools.FluentQueryExpressions.Test
     {
         #region Query
 
-        [TestMethod]
-        public void ShouldBeAccountQueryExpression()
-        {
-            var query = new Query<Account>();
+        private Guid item1Id = Guid.NewGuid();
 
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.EntityName);
-        }
-
-        [TestMethod]
-        public void ShouldBeDistinct()
-        {
-            var query = new Query<Account>()
-                .Distinct();
-
-            Assert.AreEqual(true, query.QueryExpression.Distinct);
-        }
-
-        [TestMethod]
-        public void ShouldCreateLateBound()
-        {
-            var query = new Query(Account.EntityLogicalName);
-
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.EntityName);
-        }
-
-        [TestMethod]
-        public void ShouldHaveNoLock()
-        {
-            var query = new Query<Account>()
-                .NoLock();
-
-            Assert.AreEqual(true, query.QueryExpression.NoLock);
-        }
-
-        [TestMethod]
-        public void ShouldSetTop()
-        {
-            var query = new Query<Account>().Top(100);
-
-            Assert.AreEqual(100, query.QueryExpression.TopCount);
-        }
-
-        #endregion Query
-
-        #region Attributes
+        private Guid item2Id = Guid.NewGuid();
 
         [TestMethod]
         public void ShouldAddAllAttributes()
@@ -89,44 +47,6 @@ namespace MscrmTools.FluentQueryExpressions.Test
             Assert.IsTrue(query.QueryExpression.ColumnSet.Columns.Contains(Account.Fields.Name));
             Assert.IsTrue(query.QueryExpression.ColumnSet.Columns.Contains(Account.Fields.AccountNumber));
         }
-
-        [TestMethod]
-        public void ShouldAddNoAttributeEarlyBound()
-        {
-            var query = new Query<Account>().Select();
-
-            Assert.AreEqual(false, query.QueryExpression.ColumnSet.AllColumns);
-        }
-
-        [TestMethod]
-        public void ShouldAddNoAttributeLateBound()
-        {
-            var query = new Query(Account.EntityLogicalName).Select();
-
-            Assert.AreEqual(false, query.QueryExpression.ColumnSet.AllColumns);
-        }
-
-        [TestMethod]
-        public void ShouldAddOneAttributeEarlyBound()
-        {
-            var query = new Query<Account>().Select(a => a.Name);
-            Assert.IsTrue(query.QueryExpression.ColumnSet.Columns.Contains(Account.Fields.Name));
-
-            var query2 = new Query<Account>().Select(a => a.AccountId);
-            Assert.IsTrue(query2.QueryExpression.ColumnSet.Columns.Contains(Account.Fields.AccountId));
-        }
-
-        [TestMethod]
-        public void ShouldAddOneAttributeLateBound()
-        {
-            var query = new Query(Account.EntityLogicalName).Select(Account.Fields.Name);
-
-            Assert.IsTrue(query.QueryExpression.ColumnSet.Columns.Contains(Account.Fields.Name));
-        }
-
-        #endregion Attributes
-
-        #region Filters
 
         [TestMethod]
         public void ShouldAddEarlyBoundFilter()
@@ -192,18 +112,264 @@ namespace MscrmTools.FluentQueryExpressions.Test
         }
 
         [TestMethod]
-        public void ShouldSetLogicalOperatorOr()
+        public void ShouldAddLinkEarlyBound()
         {
-            var query = new Query<Account>().SetLogicalOperator(LogicalOperator.Or);
-            Assert.AreEqual(query.QueryExpression.Criteria.FilterOperator, LogicalOperator.Or);
+            var query = new Query<Account>()
+                .AddLink<Contact>(
+                    a => a.AccountId,
+                    c => c.ParentCustomerId,
+                    l => l.Select(c => new { c.FirstName, c.LastName }),
+                    JoinOperator.LeftOuter
+                );
 
-            var query2 = new Query(Account.EntityLogicalName).SetLogicalOperator(LogicalOperator.Or);
-            Assert.AreEqual(query2.QueryExpression.Criteria.FilterOperator, LogicalOperator.Or);
+            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
+            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
+            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
+            Assert.AreEqual(JoinOperator.LeftOuter, query.QueryExpression.LinkEntities.First().JoinOperator);
         }
 
-        #endregion Filters
+        [TestMethod]
+        public void ShouldAddLinkEarlyBoundWithLink()
+        {
+            var query = new Query<Account>()
+                .AddLink(new Link<Account, Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                );
 
-        #region Columns Comparer
+            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
+            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
+            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
+            Assert.AreEqual(JoinOperator.Inner, query.QueryExpression.LinkEntities.First().JoinOperator);
+        }
+
+        [TestMethod]
+        public void ShouldAddLinkEarlyBoundWithOuterLink()
+        {
+            var query = new Query<Account>()
+                .AddLink(new Link<Account, Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId, JoinOperator.LeftOuter)
+                );
+
+            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
+            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
+            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
+            Assert.AreEqual(JoinOperator.LeftOuter, query.QueryExpression.LinkEntities.First().JoinOperator);
+        }
+
+        [TestMethod]
+        public void ShouldAddLinkEarlyBoundWithoutReturnedLink()
+        {
+            var query = new Query<Account>()
+                .AddLink<Contact>(
+                    a => a.AccountId,
+                    c => c.ParentCustomerId,
+                    JoinOperator.LeftOuter
+                );
+
+            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
+            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
+            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
+            Assert.AreEqual(JoinOperator.LeftOuter, query.QueryExpression.LinkEntities.First().JoinOperator);
+        }
+
+        [TestMethod]
+        public void ShouldAddLinkLateBoundWithLink()
+        {
+            var query = new Query(Account.EntityLogicalName)
+                .AddLink(
+                    new Link(Contact.EntityLogicalName, Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
+                );
+
+            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
+            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
+            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
+            Assert.AreEqual(JoinOperator.Inner, query.QueryExpression.LinkEntities.First().JoinOperator);
+        }
+
+        [TestMethod]
+        public void ShouldAddLinkLateBoundWithOuterLink()
+        {
+            var query = new Query(Account.EntityLogicalName)
+                .AddLink(
+                    new Link(Contact.EntityLogicalName, Contact.Fields.ParentCustomerId, Account.Fields.AccountId, JoinOperator.LeftOuter)
+                );
+
+            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
+            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
+            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
+            Assert.AreEqual(JoinOperator.LeftOuter, query.QueryExpression.LinkEntities.First().JoinOperator);
+        }
+
+        [TestMethod]
+        public void ShouldAddLinkLateBoundWithParameters()
+        {
+            var query = new Query(Account.EntityLogicalName)
+                .AddLink(Account.Fields.AccountId, Contact.EntityLogicalName, Contact.Fields.ParentCustomerId);
+
+            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
+            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
+            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
+            Assert.AreEqual(JoinOperator.Inner, query.QueryExpression.LinkEntities.First().JoinOperator);
+        }
+
+        [TestMethod]
+        public void ShouldAddLinkLateBoundWithParametersOuter()
+        {
+            var query = new Query(Account.EntityLogicalName)
+                .AddLink(Account.Fields.AccountId, Contact.EntityLogicalName, Contact.Fields.ParentCustomerId, JoinOperator.LeftOuter);
+
+            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
+            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
+            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
+            Assert.AreEqual(JoinOperator.LeftOuter, query.QueryExpression.LinkEntities.First().JoinOperator);
+        }
+
+        [TestMethod]
+        public void ShouldAddLinks()
+        {
+            var query = new Query<Account>()
+                 .AddLink<Contact>(a => a.AccountId, c => c.ParentCustomerId,
+                     l => l.Select(c => new { c.FirstName, c.LastName }),
+                     JoinOperator.LeftOuter
+                 )
+                 .AddLink<Task>(a => a.AccountId, t => t.RegardingObjectId,
+                     l => l.Select(t => new { t.Subject }),
+                     JoinOperator.LeftOuter
+                 );
+
+            Assert.AreEqual(2, query.QueryExpression.LinkEntities.Count);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities[0].LinkToEntityName);
+            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities[0].LinkToAttributeName);
+            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities[0].LinkFromAttributeName);
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities[0].LinkFromEntityName);
+            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities[0].EntityAlias);
+            Assert.AreEqual(Task.EntityLogicalName, query.QueryExpression.LinkEntities[1].LinkToEntityName);
+            Assert.AreEqual(Task.Fields.RegardingObjectId, query.QueryExpression.LinkEntities[1].LinkToAttributeName);
+            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities[1].LinkFromAttributeName);
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities[1].LinkFromEntityName);
+            Assert.AreEqual(Task.EntityLogicalName, query.QueryExpression.LinkEntities[1].EntityAlias);
+        }
+
+        [TestMethod]
+        public void ShouldAddNoAttribute()
+        {
+            var query = new Query<Account>().Select(new string[0]);
+
+            Assert.AreEqual(false, query.QueryExpression.ColumnSet.AllColumns);
+            Assert.AreEqual(0, query.QueryExpression.ColumnSet.Columns.Count);
+        }
+
+        [TestMethod]
+        public void ShouldAddNoAttributeEarlyBound()
+        {
+            var query = new Query<Account>().Select();
+
+            Assert.AreEqual(false, query.QueryExpression.ColumnSet.AllColumns);
+        }
+
+        [TestMethod]
+        public void ShouldAddNoAttributeLateBound()
+        {
+            var query = new Query(Account.EntityLogicalName).Select();
+
+            Assert.AreEqual(false, query.QueryExpression.ColumnSet.AllColumns);
+        }
+
+        [TestMethod]
+        public void ShouldAddOneAttributeEarlyBound()
+        {
+            var query = new Query<Account>().Select(a => a.Name);
+            Assert.IsTrue(query.QueryExpression.ColumnSet.Columns.Contains(Account.Fields.Name));
+
+            var query2 = new Query<Account>().Select(a => a.AccountId);
+            Assert.IsTrue(query2.QueryExpression.ColumnSet.Columns.Contains(Account.Fields.AccountId));
+        }
+
+        [TestMethod]
+        public void ShouldAddOneAttributeLateBound()
+        {
+            var query = new Query(Account.EntityLogicalName).Select(Account.Fields.Name);
+
+            Assert.IsTrue(query.QueryExpression.ColumnSet.Columns.Contains(Account.Fields.Name));
+        }
+
+        [TestMethod]
+        public void ShouldAddOrderEarlyBound()
+        {
+            var query = new Query<Account>().OrderByDescending(a => a.Name);
+
+            Assert.AreEqual(Account.Fields.Name, query.QueryExpression.Orders.First().AttributeName);
+            Assert.AreEqual(OrderType.Descending, query.QueryExpression.Orders.First().OrderType);
+
+            var query2 = new Query<Account>().OrderBy(a => a.Name);
+
+            Assert.AreEqual(Account.Fields.Name, query2.QueryExpression.Orders.First().AttributeName);
+            Assert.AreEqual(OrderType.Ascending, query2.QueryExpression.Orders.First().OrderType);
+        }
+
+        [TestMethod]
+        public void ShouldAddOrderLateBound()
+        {
+            var query = new Query(Account.EntityLogicalName).OrderBy(Account.Fields.Name);
+
+            Assert.AreEqual(Account.Fields.Name, query.QueryExpression.Orders.First().AttributeName);
+            Assert.AreEqual(OrderType.Ascending, query.QueryExpression.Orders.First().OrderType);
+
+            var query2 = new Query(Account.EntityLogicalName).OrderByDescending(Account.Fields.Name);
+
+            Assert.AreEqual(Account.Fields.Name, query2.QueryExpression.Orders.First().AttributeName);
+            Assert.AreEqual(OrderType.Descending, query2.QueryExpression.Orders.First().OrderType);
+        }
+
+        [TestMethod]
+        public void ShouldAddPaging()
+        {
+            var query = new Query<Account>()
+                .SetPagingInfo(1, 100, true);
+
+            Assert.AreEqual(1, query.QueryExpression.PageInfo.PageNumber);
+            Assert.AreEqual(100, query.QueryExpression.PageInfo.Count);
+            Assert.AreEqual(true, query.QueryExpression.PageInfo.ReturnTotalRecordCount);
+        }
+
+        [TestMethod]
+        public void ShouldBeAccountQueryExpression()
+        {
+            var query = new Query<Account>();
+
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.EntityName);
+        }
+
+        [TestMethod]
+        public void ShouldBeDistinct()
+        {
+            var query = new Query<Account>()
+                .Distinct();
+
+            Assert.AreEqual(true, query.QueryExpression.Distinct);
+        }
 
         [TestMethod]
         public void ShouldCompareWhereEqualEarlyBound()
@@ -446,216 +612,1115 @@ namespace MscrmTools.FluentQueryExpressions.Test
             Assert.AreEqual(true, query2.QueryExpression.Criteria.Conditions.First().CompareColumns);
         }
 
-        #endregion Columns Comparer
+        [TestMethod]
+        public void ShouldCreateLateBound()
+        {
+            var query = new Query(Account.EntityLogicalName);
 
-        #region Link Entities
+            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.EntityName);
+        }
 
         [TestMethod]
-        public void ShouldAddLinkEarlyBound()
+        public void ShouldGetAll()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var records = new Query<Account>()
+                    .GetAll(service);
+
+                Assert.AreEqual(1, records.Count);
+                Assert.AreEqual(item1Id, records.First().Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetAllTopCount()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var records = new Query<Account>()
+                    .Top(100)
+                    .GetAll(service);
+
+                Assert.AreEqual(1, records.Count);
+                Assert.AreEqual(item1Id, records.First().Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetAllWithExtension()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var records = service.RetrieveMultiple(new Query<Account>());
+
+                Assert.AreEqual(1, records.Count);
+                Assert.AreEqual(item1Id, records.First().Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetAllWithoutPaging()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var records = new Query<Account>()
+                    .GetAll(service);
+
+                Assert.AreEqual(1, records.Count);
+                Assert.AreEqual(item1Id, records.First().Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetById()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var query = new Query<Account>();
+                var record = query.GetById(Guid.NewGuid(), service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(Account.EntityLogicalName + "id", query.QueryExpression.Criteria.Conditions.First().AttributeName);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetByIdForActivity()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var query = new Query<Task>();
+                var record = query.GetById(Guid.NewGuid(), service, true);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual("activityid", query.QueryExpression.Criteria.Conditions.First().AttributeName);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetByIdForActivityLateBound()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var query = new Query(Task.EntityLogicalName);
+                var record = query.GetById(Guid.NewGuid(), service, true);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual("activityid", query.QueryExpression.Criteria.Conditions.First().AttributeName);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetByIdLateBound()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var query = new Query(Contact.EntityLogicalName);
+                var record = query.GetById(Guid.NewGuid(), service, false);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(Contact.PrimaryIdAttribute, query.QueryExpression.Criteria.Conditions.First().AttributeName);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetFirst()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    },
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item2Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .GetFirst(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item1Id, record.Id);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ShouldGetFirstNull()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                new Query<Account>()
+                    .GetFirst(service);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetFirstOrDefault()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    },
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id =item2Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .GetFirstOrDefault(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item1Id, record.Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetFirstOrDefaultIsNull()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .GetFirstOrDefault(service);
+
+                Assert.IsNull(record);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetFirstOrDefaultWithTop()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    },
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id =item2Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .Top(10)
+                    .GetFirstOrDefault(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item1Id, record.Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetFirstWithTop()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    },
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item2Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .Top(10)
+                    .GetFirst(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item1Id, record.Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetLast()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    // Data is inverted because GetLast change sort order
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id =item2Id
+                                    },
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .OrderBy(a => a.CreatedOn)
+                    .GetLast(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item2Id, record.Id);
+
+                record = new Query<Account>()
+                    .OrderByDescending(a => a.CreatedOn)
+                    .GetLast(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item2Id, record.Id);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ShouldGetLastNull()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                new Query<Account>()
+                    .OrderBy(a => a.CreatedOn)
+                    .GetLast(service);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetLastOrDefault()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                      new Entity(qe.EntityName)
+                                    {
+                                        Id =item2Id
+                                    },
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .OrderBy(a => a.CreatedOn)
+                    .GetLastOrDefault(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item2Id, record.Id);
+
+                record = new Query<Account>()
+                   .OrderByDescending(a => a.CreatedOn)
+                   .GetLastOrDefault(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item2Id, record.Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetLastOrDefaultIsNull()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .GetLastOrDefault(service);
+
+                Assert.IsNull(record);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetLastOrDefaultWithTop()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    },
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id =item2Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .Top(10)
+                    .GetLastOrDefault(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item2Id, record.Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetLastWithTop()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    },
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id =item2Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .Top(10)
+                    .GetLast(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item2Id, record.Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetResults()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    },
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item2Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var records = new Query<Account>()
+                    .GetResults(service);
+
+                Assert.AreEqual(2, records.Entities.Count);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetSingle()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .GetSingle(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item1Id, record.Id);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ShouldGetSingleMany()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    },
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id =item2Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                new Query<Account>().GetSingle(service);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ShouldGetSingleNull()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                new Query<Account>()
+                    .GetSingle(service);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetSingleOrDefault()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .GetSingleOrDefault(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item1Id, record.Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetSingleOrDefaultIsNull()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .GetSingleOrDefault(service);
+
+                Assert.IsNull(record);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetSingleOrDefaultIsNullWithTop()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .Top(10)
+                    .GetSingleOrDefault(service);
+
+                Assert.IsNull(record);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldGetSingleWithTop()
+        {
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
+
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .Top(10)
+                    .GetSingle(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item1Id, record.Id);
+            }
+        }
+
+        [TestMethod]
+        public void ShouldHaveNoLock()
         {
             var query = new Query<Account>()
-                .AddLink<Contact>(
-                    a => a.AccountId,
-                    c => c.ParentCustomerId,
-                    l => l.Select(c => new { c.FirstName, c.LastName }),
-                    JoinOperator.LeftOuter
-                );
+                .NoLock();
 
-            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
-            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
-            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
-            Assert.AreEqual(JoinOperator.LeftOuter, query.QueryExpression.LinkEntities.First().JoinOperator);
+            Assert.AreEqual(true, query.QueryExpression.NoLock);
         }
 
         [TestMethod]
-        public void ShouldAddLinkEarlyBoundWithLink()
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ShouldNotGetLastOrDefaultWithException()
         {
-            var query = new Query<Account>()
-                .AddLink(new Link<Account, Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
-                );
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                }
+                            };
+                        }
 
-            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
-            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
-            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
-            Assert.AreEqual(JoinOperator.Inner, query.QueryExpression.LinkEntities.First().JoinOperator);
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .GetLast(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item2Id, record.Id);
+            }
         }
 
         [TestMethod]
-        public void ShouldAddLinkEarlyBoundWithOuterLink()
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ShouldNotGetLastWithException()
         {
-            var query = new Query<Account>()
-                .AddLink(new Link<Account, Contact>(Contact.Fields.ParentCustomerId, Account.Fields.AccountId, JoinOperator.LeftOuter)
-                );
+            using (ShimsContext.Create())
+            {
+                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
+                {
+                    RetrieveMultipleQueryBase = queryBase =>
+                    {
+                        if (queryBase is QueryExpression qe)
+                        {
+                            return new EntityCollection
+                            {
+                                EntityName = qe.EntityName,
+                                Entities =
+                                {
+                                    // Data is inverted because GetLast change sort order
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id =item2Id
+                                    },
+                                    new Entity(qe.EntityName)
+                                    {
+                                        Id = item1Id
+                                    }
+                                }
+                            };
+                        }
 
-            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
-            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
-            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
-            Assert.AreEqual(JoinOperator.LeftOuter, query.QueryExpression.LinkEntities.First().JoinOperator);
+                        return new EntityCollection();
+                    }
+                };
+
+                var record = new Query<Account>()
+                    .GetLast(service);
+
+                Assert.IsNotNull(record);
+                Assert.AreEqual(item2Id, record.Id);
+            }
         }
 
         [TestMethod]
-        public void ShouldAddLinkEarlyBoundWithoutReturnedLink()
+        public void ShouldSetLogicalOperatorOr()
         {
-            var query = new Query<Account>()
-                .AddLink<Contact>(
-                    a => a.AccountId,
-                    c => c.ParentCustomerId,
-                    JoinOperator.LeftOuter
-                );
+            var query = new Query<Account>().SetLogicalOperator(LogicalOperator.Or);
+            Assert.AreEqual(query.QueryExpression.Criteria.FilterOperator, LogicalOperator.Or);
 
-            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
-            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
-            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
-            Assert.AreEqual(JoinOperator.LeftOuter, query.QueryExpression.LinkEntities.First().JoinOperator);
-        }
-
-        [TestMethod]
-        public void ShouldAddLinkLateBoundWithLink()
-        {
-            var query = new Query(Account.EntityLogicalName)
-                .AddLink(
-                    new Link(Contact.EntityLogicalName, Contact.Fields.ParentCustomerId, Account.Fields.AccountId)
-                );
-
-            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
-            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
-            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
-            Assert.AreEqual(JoinOperator.Inner, query.QueryExpression.LinkEntities.First().JoinOperator);
-        }
-
-        [TestMethod]
-        public void ShouldAddLinkLateBoundWithOuterLink()
-        {
-            var query = new Query(Account.EntityLogicalName)
-                .AddLink(
-                    new Link(Contact.EntityLogicalName, Contact.Fields.ParentCustomerId, Account.Fields.AccountId, JoinOperator.LeftOuter)
-                );
-
-            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
-            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
-            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
-            Assert.AreEqual(JoinOperator.LeftOuter, query.QueryExpression.LinkEntities.First().JoinOperator);
-        }
-
-        [TestMethod]
-        public void ShouldAddLinkLateBoundWithParameters()
-        {
-            var query = new Query(Account.EntityLogicalName)
-                .AddLink(Account.Fields.AccountId, Contact.EntityLogicalName, Contact.Fields.ParentCustomerId);
-
-            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
-            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
-            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
-            Assert.AreEqual(JoinOperator.Inner, query.QueryExpression.LinkEntities.First().JoinOperator);
-        }
-
-        [TestMethod]
-        public void ShouldAddLinkLateBoundWithParametersOuter()
-        {
-            var query = new Query(Account.EntityLogicalName)
-                .AddLink(Account.Fields.AccountId, Contact.EntityLogicalName, Contact.Fields.ParentCustomerId, JoinOperator.LeftOuter);
-
-            Assert.AreEqual(1, query.QueryExpression.LinkEntities.Count);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkToEntityName);
-            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities.First().LinkToAttributeName);
-            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities.First().LinkFromAttributeName);
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities.First().LinkFromEntityName);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities.First().EntityAlias);
-            Assert.AreEqual(JoinOperator.LeftOuter, query.QueryExpression.LinkEntities.First().JoinOperator);
-        }
-
-        [TestMethod]
-        public void ShouldAddLinks()
-        {
-            var query = new Query<Account>()
-                 .AddLink<Contact>(a => a.AccountId, c => c.ParentCustomerId,
-                     l => l.Select(c => new { c.FirstName, c.LastName }),
-                     JoinOperator.LeftOuter
-                 )
-                 .AddLink<Task>(a => a.AccountId, t => t.RegardingObjectId,
-                     l => l.Select(t => new { t.Subject }),
-                     JoinOperator.LeftOuter
-                 );
-
-            Assert.AreEqual(2, query.QueryExpression.LinkEntities.Count);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities[0].LinkToEntityName);
-            Assert.AreEqual(Contact.Fields.ParentCustomerId, query.QueryExpression.LinkEntities[0].LinkToAttributeName);
-            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities[0].LinkFromAttributeName);
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities[0].LinkFromEntityName);
-            Assert.AreEqual(Contact.EntityLogicalName, query.QueryExpression.LinkEntities[0].EntityAlias);
-            Assert.AreEqual(Task.EntityLogicalName, query.QueryExpression.LinkEntities[1].LinkToEntityName);
-            Assert.AreEqual(Task.Fields.RegardingObjectId, query.QueryExpression.LinkEntities[1].LinkToAttributeName);
-            Assert.AreEqual(Account.Fields.AccountId, query.QueryExpression.LinkEntities[1].LinkFromAttributeName);
-            Assert.AreEqual(Account.EntityLogicalName, query.QueryExpression.LinkEntities[1].LinkFromEntityName);
-            Assert.AreEqual(Task.EntityLogicalName, query.QueryExpression.LinkEntities[1].EntityAlias);
-        }
-
-        #endregion Link Entities
-
-        #region Order
-
-        [TestMethod]
-        public void ShouldAddOrderEarlyBound()
-        {
-            var query = new Query<Account>().OrderByDescending(a => a.Name);
-
-            Assert.AreEqual(Account.Fields.Name, query.QueryExpression.Orders.First().AttributeName);
-            Assert.AreEqual(OrderType.Descending, query.QueryExpression.Orders.First().OrderType);
-
-            var query2 = new Query<Account>().OrderBy(a => a.Name);
-
-            Assert.AreEqual(Account.Fields.Name, query2.QueryExpression.Orders.First().AttributeName);
-            Assert.AreEqual(OrderType.Ascending, query2.QueryExpression.Orders.First().OrderType);
-        }
-
-        [TestMethod]
-        public void ShouldAddOrderLateBound()
-        {
-            var query = new Query(Account.EntityLogicalName).OrderBy(Account.Fields.Name);
-
-            Assert.AreEqual(Account.Fields.Name, query.QueryExpression.Orders.First().AttributeName);
-            Assert.AreEqual(OrderType.Ascending, query.QueryExpression.Orders.First().OrderType);
-
-            var query2 = new Query(Account.EntityLogicalName).OrderByDescending(Account.Fields.Name);
-
-            Assert.AreEqual(Account.Fields.Name, query2.QueryExpression.Orders.First().AttributeName);
-            Assert.AreEqual(OrderType.Descending, query2.QueryExpression.Orders.First().OrderType);
-        }
-
-        #endregion Order
-
-        #region Paging
-
-        [TestMethod]
-        public void ShouldAddPaging()
-        {
-            var query = new Query<Account>()
-                .SetPagingInfo(1, 100, true);
-
-            Assert.AreEqual(1, query.QueryExpression.PageInfo.PageNumber);
-            Assert.AreEqual(100, query.QueryExpression.PageInfo.Count);
-            Assert.AreEqual(true, query.QueryExpression.PageInfo.ReturnTotalRecordCount);
+            var query2 = new Query(Account.EntityLogicalName).SetLogicalOperator(LogicalOperator.Or);
+            Assert.AreEqual(query2.QueryExpression.Criteria.FilterOperator, LogicalOperator.Or);
         }
 
         [TestMethod]
@@ -671,7 +1736,15 @@ namespace MscrmTools.FluentQueryExpressions.Test
             Assert.AreEqual("<fakePagingCookie>", query.QueryExpression.PageInfo.PagingCookie);
         }
 
-        #endregion Paging
+        [TestMethod]
+        public void ShouldSetTop()
+        {
+            var query = new Query<Account>().Top(100);
+
+            Assert.AreEqual(100, query.QueryExpression.TopCount);
+        }
+
+        #endregion Query
 
         #region Conditions
 
@@ -3521,1095 +4594,77 @@ namespace MscrmTools.FluentQueryExpressions.Test
 
         #endregion Conditions
 
-        #region IOrganizationService calls
-
-        private Guid item1Id = Guid.NewGuid();
-        private Guid item2Id = Guid.NewGuid();
+        #region Global
 
         [TestMethod]
-        public void ShouldGetAll()
+        public void ShouldWork()
         {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
+            var fluqry = new Query("account")
+                .NoLock(true)
+                .Distinct(true)
+                .Select(
+                    "name",
+                    "primarycontactid",
+                    "address1_city",
+                    "address1_addresstypecode",
+                    "address1_shippingmethodcode",
+                    "telephone1",
+                    "accountid"
+                )
+                .WhereNotNull("emailaddress1")
+                .AddFilter(new Filter(LogicalOperator.And)
+                    .WhereNotNull("address1_county")
+                    .WhereNotNull("address1_city")
+                )
+                .AddFilter(new Filter(LogicalOperator.And)
+                    .WhereNull("address1_line1")
+                    .WhereEqual("statecode", 0)
+                    .AddFilter(new Filter(LogicalOperator.Or)
+                        .WhereNull("accountid")
+                        .WhereNotEqual("fullname", "fdfdsds", "par")
+                        .AddFilter(new Filter(LogicalOperator.And)
+                            .WhereEqual("sic", "hgfhgf")
+                            .WhereNull("slaid")
+                        )
+                    )
+                )
+                .OrderBy("name")
+                .OrderByDescending("address1_fax")
+                .AddLink(new Link("contact", "contactid", "primarycontactid", JoinOperator.LeftOuter)
+                    .SetAlias("par")
+                    .Select("emailaddress1")
+                    .AddFilter(new Filter(LogicalOperator.And)
+                        .WhereLike("address1_country", "%ede%")
+                    )
+                    .AddFilter(new Filter(LogicalOperator.Or)
+                        .WhereEqual("address1_addresstypecode", 3)
+                    )
+                )
+                .AddLink(new Link("contact", "parentcustomerid", "accountid", JoinOperator.LeftOuter)
+                    .Select("firstname", "lastname")
+                    .AddLink(new Link("systemuser", "systemuserid", "owninguser", JoinOperator.Inner)
+                        .SetAlias("R")
+                        .Select("accessmode")
+                        .WhereNotNull("internalemailaddress")
+                        .AddFilter(new Filter(LogicalOperator.And)
+                            .WhereBetween("createdon", "2021-12-31T00:00:00+01:00", "2022-12-01T00:00:00+01:00")
+                            .WhereLastYear("modifiedon")
+                            .AddFilter(new Filter(LogicalOperator.And)
+                                .WhereBetween("createdon", "2021-12-31T00:00:00+01:00", "2022-12-01T00:00:00+01:00")
+                                .WhereLastYear("modifiedon")
+                            )
+                            .AddFilter(new Filter(LogicalOperator.And)
+                                .WhereBetween("createdon", "2021-12-31T00:00:00+01:00", "2022-12-01T00:00:00+01:00")
+                                .WhereLastYear("modifiedon")
+                            )
+                        )
+                        .OrderBy("fullname")
+                    )
+                );
 
-                        return new EntityCollection();
-                    }
-                };
-
-                var records = new Query<Account>()
-                    .GetAll(service);
-
-                Assert.AreEqual(1, records.Count);
-                Assert.AreEqual(item1Id, records.First().Id);
-            }
+            Assert.IsTrue(true);
         }
 
-        [TestMethod]
-        public void ShouldGetAllTopCount()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var records = new Query<Account>()
-                    .Top(100)
-                    .GetAll(service);
-
-                Assert.AreEqual(1, records.Count);
-                Assert.AreEqual(item1Id, records.First().Id);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetAllWithExtension()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var records = service.RetrieveMultiple(new Query<Account>());
-
-                Assert.AreEqual(1, records.Count);
-                Assert.AreEqual(item1Id, records.First().Id);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetAllWithoutPaging()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var records = new Query<Account>()
-                    .GetAll(service);
-
-                Assert.AreEqual(1, records.Count);
-                Assert.AreEqual(item1Id, records.First().Id);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetById()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var query = new Query<Account>();
-                var record = query.GetById(Guid.NewGuid(), service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(Account.EntityLogicalName + "id", query.QueryExpression.Criteria.Conditions.First().AttributeName);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetByIdForActivity()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var query = new Query<Task>();
-                var record = query.GetById(Guid.NewGuid(), service, true);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual("activityid", query.QueryExpression.Criteria.Conditions.First().AttributeName);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetByIdForActivityLateBound()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var query = new Query(Task.EntityLogicalName);
-                var record = query.GetById(Guid.NewGuid(), service, true);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual("activityid", query.QueryExpression.Criteria.Conditions.First().AttributeName);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetByIdLateBound()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var query = new Query(Contact.EntityLogicalName);
-                var record = query.GetById(Guid.NewGuid(), service, false);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(Contact.PrimaryIdAttribute, query.QueryExpression.Criteria.Conditions.First().AttributeName);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetFirst()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    },
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item2Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .GetFirst(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item1Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ShouldGetFirstNull()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                new Query<Account>()
-                    .GetFirst(service);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetFirstOrDefault()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    },
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id =item2Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .GetFirstOrDefault(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item1Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetFirstOrDefaultIsNull()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .GetFirstOrDefault(service);
-
-                Assert.IsNull(record);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetFirstOrDefaultWithTop()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    },
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id =item2Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .Top(10)
-                    .GetFirstOrDefault(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item1Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetFirstWithTop()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    },
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item2Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .Top(10)
-                    .GetFirst(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item1Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetLast()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    // Data is inverted because GetLast change sort order
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id =item2Id
-                                    },
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .OrderBy(a => a.CreatedOn)
-                    .GetLast(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item2Id, record.Id);
-
-                record = new Query<Account>()
-                    .OrderByDescending(a => a.CreatedOn)
-                    .GetLast(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item2Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ShouldGetLastNull()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                new Query<Account>()
-                    .OrderBy(a => a.CreatedOn)
-                    .GetLast(service);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetLastOrDefault()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                      new Entity(qe.EntityName)
-                                    {
-                                        Id =item2Id
-                                    },
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .OrderBy(a => a.CreatedOn)
-                    .GetLastOrDefault(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item2Id, record.Id);
-
-                record = new Query<Account>()
-                   .OrderByDescending(a => a.CreatedOn)
-                   .GetLastOrDefault(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item2Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetLastOrDefaultIsNull()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .GetLastOrDefault(service);
-
-                Assert.IsNull(record);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetLastOrDefaultWithTop()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    },
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id =item2Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .Top(10)
-                    .GetLastOrDefault(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item2Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetLastWithTop()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    },
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id =item2Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .Top(10)
-                    .GetLast(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item2Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetResults()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    },
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item2Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var records = new Query<Account>()
-                    .GetResults(service);
-
-                Assert.AreEqual(2, records.Entities.Count);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetSingle()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .GetSingle(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item1Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ShouldGetSingleMany()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    },
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id =item2Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                new Query<Account>().GetSingle(service);
-            }
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ShouldGetSingleNull()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                new Query<Account>()
-                    .GetSingle(service);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetSingleOrDefault()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .GetSingleOrDefault(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item1Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetSingleOrDefaultIsNull()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .GetSingleOrDefault(service);
-
-                Assert.IsNull(record);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetSingleOrDefaultIsNullWithTop()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .Top(10)
-                    .GetSingleOrDefault(service);
-
-                Assert.IsNull(record);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldGetSingleWithTop()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .Top(10)
-                    .GetSingle(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item1Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ShouldNotGetLastOrDefaultWithException()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .GetLast(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item2Id, record.Id);
-            }
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ShouldNotGetLastWithException()
-        {
-            using (ShimsContext.Create())
-            {
-                var service = new Microsoft.Xrm.Sdk.Fakes.StubIOrganizationService
-                {
-                    RetrieveMultipleQueryBase = queryBase =>
-                    {
-                        if (queryBase is QueryExpression qe)
-                        {
-                            return new EntityCollection
-                            {
-                                EntityName = qe.EntityName,
-                                Entities =
-                                {
-                                    // Data is inverted because GetLast change sort order
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id =item2Id
-                                    },
-                                    new Entity(qe.EntityName)
-                                    {
-                                        Id = item1Id
-                                    }
-                                }
-                            };
-                        }
-
-                        return new EntityCollection();
-                    }
-                };
-
-                var record = new Query<Account>()
-                    .GetLast(service);
-
-                Assert.IsNotNull(record);
-                Assert.AreEqual(item2Id, record.Id);
-            }
-        }
-
-        #endregion IOrganizationService calls
+        #endregion Global
     }
 }

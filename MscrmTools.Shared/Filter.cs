@@ -33,6 +33,16 @@ namespace MscrmTools.FluentQueryExpressions
             return this;
         }
 
+        /// <summary>Adds a filter.</summary>
+        /// <param name="filter">The filter.</param>
+        /// <returns>This <see cref="Filter{T}"></see></returns>
+        public Filter AddFilter(Filter filter)
+        {
+            InnerFilter.Filters.Add(filter.InnerFilter);
+
+            return this;
+        }
+
         #endregion Filters
 
         #region Columns Comparer

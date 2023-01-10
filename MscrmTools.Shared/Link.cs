@@ -26,20 +26,6 @@ namespace MscrmTools.FluentQueryExpressions
             ToEntity = toEntity;
         }
 
-        #region Attributes
-
-        /// <summary>Selects the specified columns from the target table.</summary>
-        /// <param name="columns">The colums.</param>
-        /// <returns>This <see cref="Link{T, U}"></see></returns>
-        public Link Select(params string[] columns)
-        {
-            InnerLinkEntity.Columns.AddColumns(columns);
-
-            return this;
-        }
-
-        #endregion Attributes
-
         #region Filters
 
         /// <summary>
@@ -105,34 +91,6 @@ namespace MscrmTools.FluentQueryExpressions
 
         #endregion Link Entities
 
-        #region Order
-
-        /// <summary>
-        /// Order the result of the query by the <paramref name="column"/>
-        /// </summary>
-        /// <param name="column">Column to use to sort results of the query</param>
-        /// <returns>This <see cref="Link{T, U}"></see></returns>
-        public Link OrderBy(string column)
-        {
-            InnerLinkEntity.Orders.Add(new OrderExpression(column, OrderType.Ascending));
-
-            return this;
-        }
-
-        /// <summary>
-        /// Order the result of the query by the <paramref name="column"/> descending
-        /// </summary>
-        /// <param name="column">Column to use to sort results of the query</param>
-        /// <returns>This <see cref="Link{T, U}"></see></returns>
-        public Link OrderByDescending(string column)
-        {
-            InnerLinkEntity.Orders.Add(new OrderExpression(column, OrderType.Descending));
-
-            return this;
-        }
-
-        #endregion Order
-
         #region Columns Comparer
 
 #if CRMV9
@@ -150,917 +108,6 @@ namespace MscrmTools.FluentQueryExpressions
 #endif
 
         #endregion Columns Comparer
-
-        #region Conditions
-
-        /// <summary>Adds a condition where <paramref name="column"/> respects the <paramref name="conditionOperator"/> and the <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="conditionOperator">The condition operator.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>The <see cref="Link{T, U}"/></returns>
-        public Link Where(string column, ConditionOperator conditionOperator, params object[] values)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, conditionOperator, values);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> is above <paramref name="value"/> in the hierarchy</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereAbove(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Above, value);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> is above or equals <paramref name="value"/> in the hierarchy</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereAboveOrEqual(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.AboveOrEqual, value);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value begins with <paramref name="value"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereBeginsWith(string column, string value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.BeginsWith, value);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is between <paramref name="value1"/> and <paramref name="value2"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value1">Value 1</param>
-        /// <param name="value2">Value 2</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereBetween(string column, object value1, object value2)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Between, value1, value2);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value contains <paramref name="value"/></summary>
-        /// <remarks>You must use the Contains operator for only those attributes that are enabled for full-text indexing.
-        /// Otherwise, you will receive a generic SQL error message while retrieving data. In a Microsoft Dynamics 365 default
-        /// installation, only the attributes of the KBArticle (article) entity are enabled for full-text indexing.</remarks>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">Value</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereContains(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Contains, value);
-
-            return this;
-        }
-#if CRMV9
-
-        /// <summary>Adds a condition where <paramref name="column"/> contains <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">Values to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereContainValues(string column, params object[] values)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ContainValues, values);
-
-            return this;
-        }
-
-#endif
-
-        /// <summary>Adds a condition where <paramref name="column"/> value does not begin with <paramref name="value"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereDoesNotBeginWith(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.DoesNotBeginWith, value);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value does not contain <paramref name="value"/></summary>
-        /// <remarks>You must use the Contains operator for only those attributes that are enabled for full-text indexing.
-        /// Otherwise, you will receive a generic SQL error message while retrieving data. In a Microsoft Dynamics 365 default
-        /// installation, only the attributes of the KBArticle (article) entity are enabled for full-text indexing.</remarks>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">Value</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereDoesNotContain(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.DoesNotContain, value);
-
-            return this;
-        }
-
-#if CRMV9
-        /// <summary>Adds a condition where <paramref name="column"/> does not contain <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">Values to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereDoesNotContainValues(string column, params object[] values)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.DoesNotContainValues, values);
-
-            return this;
-        }
-
-#endif
-        /// <summary>Adds a condition where <paramref name="column"/> value does not end with <paramref name="value"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereDoesNotEndWith(string column, string value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.DoesNotEndWith, value);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value ends with <paramref name="value"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereEndsWith(string column, string value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EndsWith, value);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value equals <paramref name="value"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereEqual(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Equal, value);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user business unit</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereEqualBusinessId(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualBusinessId);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user unique identifier</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereEqualUserId(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserId);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user language</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereEqualUserLanguage(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserLanguage);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user or their reporting hierarchy</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereEqualUserOrUserHierarchy(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserOrUserHierarchy);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user and his teams or their reporting hierarchy and their teams</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereEqualUserOrUserHierarchyAndTeams(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserOrUserHierarchyAndTeams);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> equals current user or a team the current user is member of</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereEqualUserOrUserTeams(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserOrUserTeams);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> equals a team the current user is member of</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereEqualUserTeams(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserTeams);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> is greater or equal to <paramref name="value"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The value</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereGreaterEqual(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.GreaterEqual, value);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> is greater than <paramref name="value"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The value</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereGreaterThan(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.GreaterThan, value);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The value</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereIn(string column, IList values)
-        {
-            InnerLinkEntity.LinkCriteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.In, values));
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The value</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereIn(string column, params object[] values)
-        {
-            InnerLinkEntity.LinkCriteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.In, values));
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The value</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereInFiscalPeriod(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.InFiscalPeriod, value);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="period">The period</param>
-        /// <param name="year">The year</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereInFiscalPeriodAndYear(string column, int period, int year)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.InFiscalPeriodAndYear, period, year);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="year">The year</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereInFiscalYear(string column, int year)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.InFiscalYear, year);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in or after the curent fiscal period</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="period">The period</param>
-        /// <param name="year">The year</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereInOrAfterFiscalPeriodAndYear(string column, int period, int year)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.InOrAfterFiscalPeriodAndYear,
-                period, year);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is in or before the curent fiscal period</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="period">The period</param>
-        /// <param name="year">The year</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereInOrBeforeFiscalPeriodAndYear(string column, int period, int year)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.InOrBeforeFiscalPeriodAndYear,
-                period, year);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on last 7 days</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLast7Days(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Last7Days);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last fiscal period</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLastFiscalPeriod(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastFiscalPeriod);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last fiscal year</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLastFiscalYear(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastFiscalYear);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last month</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLastMonth(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastMonth);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last week</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLastWeek(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastWeek);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> days</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of days to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLastXDays(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXDays, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> fiscal periods</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of fiscal periods to evaluate</param>
-        public Link WhereLastXFiscalPeriods(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXFiscalPeriods, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> fiscal years</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of years to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLastXFiscalYears(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXFiscalYears, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> hours</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of hours to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLastXHours(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXHours, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> months</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of months to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLastXMonths(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXMonths, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> weeks</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of weeks to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLastXWeeks(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXWeeks, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> years</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of years to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLastXYears(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXYears, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the last year</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLastYear(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastYear);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is less or equal to <paramref name="value"/> </summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The value</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLessEqual(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LessEqual, value);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is less than <paramref name="value"/> </summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The value</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLessThan(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LessThan, value);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value matches the specifed <paramref name="pattern"/> </summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="pattern">The pattern</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereLike(string column, string pattern)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Like, pattern);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is found in the specifed <paramref name="bitmask"/> </summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="bitmask">The bitmask</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereMask(string column, object bitmask)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Mask, bitmask);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on next 7 days</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNext7Days(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Next7Days);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on next fiscal period</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextFiscalPeriod(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextFiscalPeriod);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on next fiscal year</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextFiscalYear(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextFiscalYear);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on next month</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextMonth(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextMonth);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on next week</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextWeek(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextWeek);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> fiscal periods</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of days to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextXDays(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXDays, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> fiscal periods</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of fiscal perdiods to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextXFiscalPeriods(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXFiscalPeriods, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> fiscal years</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of fiscal years to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextXFiscalYears(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXFiscalYears, x);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> hours</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of hours to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextXHours(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXHours, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> months</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of months to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextXMonths(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXMonths, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> weeks</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of weeks to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextXWeeks(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXWeeks, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> years</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of years to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextXYears(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXYears, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the next year</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNextYear(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextYear);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is not between <paramref name="value1"/> and <paramref name="value2"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value1">Value 1</param>
-        /// <param name="value2">Value 2</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNotBetween(string column, object value1, object value2)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotBetween, value1, value2);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value does not equal <paramref name="value"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNotEqual(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotEqual, value);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> does not equal current user business unit</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNotEqualBusinessId(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotEqualBusinessId);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> does not equal current user unique identifier</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNotEqualUserId(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotEqualUserId);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The values</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNotIn(string column, IList values)
-        {
-            InnerLinkEntity.LinkCriteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.NotIn, values));
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="values">The values</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNotIn(string column, params object[] values)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotIn, values);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is not found in the specifed <paramref name="bitmask"/> </summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="bitmask">The bitmask</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNotMask(string column, object bitmask)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotMask, bitmask);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is not null</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNotNull(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotNull);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is not on the specifed <paramref name="datetime"/> </summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="datetime">The date</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNotOn(string column, DateTime datetime)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotOn, datetime);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is above <paramref name="value"/> in the hierarchy </summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The date</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereNotUnder(string column, object value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotUnder, value);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> does not contain data</summary>
-        /// <param name="column">Logical name of the column</param>
-        public Link WhereNull(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Null);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> days</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of days to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereOlderThanXDays(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXDays, x);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> hours</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of hours to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereOlderThanXHours(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXHours, x);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> minutes</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of minutes to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereOlderThanXMinutes(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXMinutes, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> months</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of months to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereOlderThanXMonths(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXMonths, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> weeks</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of weeks to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereOlderThanXWeeks(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXWeeks, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> years</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="x">Number of years to evaluate</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereOlderThanXYears(string column, int x)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXYears, x);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is on the specifed <paramref name="datetime"/> </summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="datetime">The date</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereOn(string column, DateTime datetime)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.On, datetime);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on or after the specifed <paramref name="datetime"/> </summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="datetime">The date</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereOnOrAfter(string column, DateTime datetime)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OnOrAfter, datetime);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is on or before the specifed <paramref name="datetime"/> </summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="datetime">The date</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereOnOrBefore(string column, DateTime datetime)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OnOrBefore, datetime);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current fiscal period</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereThisFiscalPeriod(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ThisFiscalPeriod);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current fiscal year</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereThisFiscalYear(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ThisFiscalYear);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current month</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereThisMonth(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ThisMonth);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current week</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereThisWeek(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ThisWeek);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current year</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereThisYear(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ThisYear);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> value is in the current day</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereToday(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Today);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is tomorrow</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereTomorrow(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Tomorrow);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> is under <paramref name="value"/> in the hierarchy</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereUnder(string column, Guid value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Under, value);
-
-            return this;
-        }
-        /// <summary>Adds a condition where <paramref name="column"/> is under or equals <paramref name="value"/> in the hierarchy</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <param name="value">The values.</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereUnderOrEqual(string column, Guid value)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.UnderOrEqual, value);
-
-            return this;
-        }
-
-        /// <summary>Adds a condition where <paramref name="column"/> value is yesterday</summary>
-        /// <param name="column">Logical name of the column</param>
-        /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link WhereYesterday(string column)
-        {
-            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Yesterday);
-
-            return this;
-        }
-
-        #endregion Conditions
     }
 
     /// <summary>
@@ -1211,6 +258,16 @@ namespace MscrmTools.FluentQueryExpressions
         public Link<T, U> Select(Expression<Func<U, object>> column)
         {
             InnerLinkEntity.Columns.AddColumns(AnonymousTypeHelper.GetAttributeNamesArray(column));
+            return this;
+        }
+
+        /// <summary>Selects the specified columns from the target table.</summary>
+        /// <param name="columns">The colums.</param>
+        /// <returns>This <see cref=""></see></returns>
+        public Link<T, U> Select(params string[] columns)
+        {
+            InnerLinkEntity.Columns.AddColumns(columns);
+
             return this;
         }
 
@@ -1365,6 +422,30 @@ namespace MscrmTools.FluentQueryExpressions
         public Link<T, U> OrderBy(Expression<Func<U, object>> column)
         {
             InnerLinkEntity.Orders.Add(new OrderExpression(AnonymousTypeHelper.GetAttributeName(column), OrderType.Ascending));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Order the result of the query by the <paramref name="column"/>
+        /// </summary>
+        /// <param name="column">Column to use to sort results of the query</param>
+        /// <returns>This <see cref="Link{T, U}"></see></returns>
+        public Link<T, U> OrderBy(string column)
+        {
+            InnerLinkEntity.Orders.Add(new OrderExpression(column, OrderType.Ascending));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Order the result of the query by the <paramref name="column"/> descending
+        /// </summary>
+        /// <param name="column">Column to use to sort results of the query</param>
+        /// <returns>This <see cref="Link{T, U}"></see></returns>
+        public Link<T, U> OrderByDescending(string column)
+        {
+            InnerLinkEntity.Orders.Add(new OrderExpression(column, OrderType.Descending));
 
             return this;
         }
@@ -2381,6 +1462,913 @@ namespace MscrmTools.FluentQueryExpressions
         public Link<T, U> WhereYesterday(Expression<Func<U, object>> column)
         {
             InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.Yesterday);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> respects the <paramref name="conditionOperator"/> and the <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="conditionOperator">The condition operator.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>The <see cref="Link{T, U}"/></returns>
+        public Link<T, U> Where(string column, ConditionOperator conditionOperator, params object[] values)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, conditionOperator, values);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> is above <paramref name="value"/> in the hierarchy</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereAbove(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Above, value);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> is above or equals <paramref name="value"/> in the hierarchy</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereAboveOrEqual(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.AboveOrEqual, value);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value begins with <paramref name="value"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereBeginsWith(string column, string value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.BeginsWith, value);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is between <paramref name="value1"/> and <paramref name="value2"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value1">Value 1</param>
+        /// <param name="value2">Value 2</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereBetween(string column, object value1, object value2)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Between, value1, value2);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value contains <paramref name="value"/></summary>
+        /// <remarks>You must use the Contains operator for only those attributes that are enabled for full-text indexing.
+        /// Otherwise, you will receive a generic SQL error message while retrieving data. In a Microsoft Dynamics 365 default
+        /// installation, only the attributes of the KBArticle (article) entity are enabled for full-text indexing.</remarks>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">Value</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereContains(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Contains, value);
+
+            return this;
+        }
+#if CRMV9
+
+        /// <summary>Adds a condition where <paramref name="column"/> contains <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">Values to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereContainValues(string column, params object[] values)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ContainValues, values);
+
+            return this;
+        }
+
+#endif
+
+        /// <summary>Adds a condition where <paramref name="column"/> value does not begin with <paramref name="value"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereDoesNotBeginWith(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.DoesNotBeginWith, value);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value does not contain <paramref name="value"/></summary>
+        /// <remarks>You must use the Contains operator for only those attributes that are enabled for full-text indexing.
+        /// Otherwise, you will receive a generic SQL error message while retrieving data. In a Microsoft Dynamics 365 default
+        /// installation, only the attributes of the KBArticle (article) entity are enabled for full-text indexing.</remarks>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">Value</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereDoesNotContain(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.DoesNotContain, value);
+
+            return this;
+        }
+
+#if CRMV9
+        /// <summary>Adds a condition where <paramref name="column"/> does not contain <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">Values to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereDoesNotContainValues(string column, params object[] values)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.DoesNotContainValues, values);
+
+            return this;
+        }
+
+#endif
+        /// <summary>Adds a condition where <paramref name="column"/> value does not end with <paramref name="value"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereDoesNotEndWith(string column, string value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.DoesNotEndWith, value);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value ends with <paramref name="value"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereEndsWith(string column, string value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EndsWith, value);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value equals <paramref name="value"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereEqual(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Equal, value);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user business unit</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereEqualBusinessId(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualBusinessId);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user unique identifier</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereEqualUserId(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserId);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user language</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereEqualUserLanguage(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserLanguage);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user or their reporting hierarchy</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereEqualUserOrUserHierarchy(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserOrUserHierarchy);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user and his teams or their reporting hierarchy and their teams</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereEqualUserOrUserHierarchyAndTeams(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserOrUserHierarchyAndTeams);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> equals current user or a team the current user is member of</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereEqualUserOrUserTeams(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserOrUserTeams);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> equals a team the current user is member of</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereEqualUserTeams(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.EqualUserTeams);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> is greater or equal to <paramref name="value"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The value</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereGreaterEqual(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.GreaterEqual, value);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> is greater than <paramref name="value"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The value</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereGreaterThan(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.GreaterThan, value);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The value</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereIn(string column, IList values)
+        {
+            InnerLinkEntity.LinkCriteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.In, values));
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The value</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereIn(string column, params object[] values)
+        {
+            InnerLinkEntity.LinkCriteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.In, values));
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The value</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereInFiscalPeriod(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.InFiscalPeriod, value);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="period">The period</param>
+        /// <param name="year">The year</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereInFiscalPeriodAndYear(string column, int period, int year)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.InFiscalPeriodAndYear, period, year);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the curent fiscal period</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="year">The year</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereInFiscalYear(string column, int year)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.InFiscalYear, year);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in or after the curent fiscal period</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="period">The period</param>
+        /// <param name="year">The year</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereInOrAfterFiscalPeriodAndYear(string column, int period, int year)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.InOrAfterFiscalPeriodAndYear,
+                period, year);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is in or before the curent fiscal period</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="period">The period</param>
+        /// <param name="year">The year</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereInOrBeforeFiscalPeriodAndYear(string column, int period, int year)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.InOrBeforeFiscalPeriodAndYear,
+                period, year);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on last 7 days</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLast7Days(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Last7Days);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last fiscal period</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLastFiscalPeriod(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastFiscalPeriod);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last fiscal year</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLastFiscalYear(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastFiscalYear);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last month</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLastMonth(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastMonth);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last week</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLastWeek(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastWeek);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> days</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of days to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLastXDays(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXDays, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> fiscal periods</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of fiscal periods to evaluate</param>
+        public Link<T, U> WhereLastXFiscalPeriods(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXFiscalPeriods, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> fiscal years</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of years to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLastXFiscalYears(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXFiscalYears, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> hours</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of hours to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLastXHours(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXHours, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> months</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of months to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLastXMonths(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXMonths, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> weeks</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of weeks to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLastXWeeks(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXWeeks, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last <paramref name="x"/> years</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of years to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLastXYears(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastXYears, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the last year</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLastYear(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LastYear);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is less or equal to <paramref name="value"/> </summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The value</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLessEqual(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LessEqual, value);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is less than <paramref name="value"/> </summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The value</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLessThan(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.LessThan, value);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value matches the specifed <paramref name="pattern"/> </summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="pattern">The pattern</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereLike(string column, string pattern)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Like, pattern);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is found in the specifed <paramref name="bitmask"/> </summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="bitmask">The bitmask</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereMask(string column, object bitmask)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Mask, bitmask);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on next 7 days</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNext7Days(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Next7Days);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on next fiscal period</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextFiscalPeriod(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextFiscalPeriod);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on next fiscal year</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextFiscalYear(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextFiscalYear);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on next month</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextMonth(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextMonth);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on next week</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextWeek(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextWeek);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> fiscal periods</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of days to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextXDays(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXDays, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> fiscal periods</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of fiscal perdiods to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextXFiscalPeriods(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXFiscalPeriods, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> fiscal years</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of fiscal years to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextXFiscalYears(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXFiscalYears, x);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> hours</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of hours to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextXHours(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXHours, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> months</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of months to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextXMonths(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXMonths, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> weeks</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of weeks to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextXWeeks(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXWeeks, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next <paramref name="x"/> years</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of years to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextXYears(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextXYears, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the next year</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNextYear(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NextYear);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is not between <paramref name="value1"/> and <paramref name="value2"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value1">Value 1</param>
+        /// <param name="value2">Value 2</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNotBetween(string column, object value1, object value2)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotBetween, value1, value2);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value does not equal <paramref name="value"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNotEqual(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotEqual, value);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> does not equal current user business unit</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNotEqualBusinessId(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotEqualBusinessId);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> does not equal current user unique identifier</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNotEqualUserId(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotEqualUserId);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The values</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNotIn(string column, IList values)
+        {
+            InnerLinkEntity.LinkCriteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.NotIn, values));
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is not in the specified <paramref name="values"/></summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="values">The values</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNotIn(string column, params object[] values)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotIn, values);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is not found in the specifed <paramref name="bitmask"/> </summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="bitmask">The bitmask</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNotMask(string column, object bitmask)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotMask, bitmask);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is not null</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNotNull(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotNull);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is not on the specifed <paramref name="datetime"/> </summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="datetime">The date</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNotOn(string column, DateTime datetime)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotOn, datetime);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is above <paramref name="value"/> in the hierarchy </summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The date</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereNotUnder(string column, object value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.NotUnder, value);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> does not contain data</summary>
+        /// <param name="column">Logical name of the column</param>
+        public Link<T, U> WhereNull(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Null);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> days</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of days to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereOlderThanXDays(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXDays, x);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> hours</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of hours to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereOlderThanXHours(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXHours, x);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> minutes</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of minutes to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereOlderThanXMinutes(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXMinutes, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> months</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of months to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereOlderThanXMonths(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXMonths, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> weeks</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of weeks to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereOlderThanXWeeks(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXWeeks, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is older than <paramref name="x"/> years</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="x">Number of years to evaluate</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereOlderThanXYears(string column, int x)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OlderThanXYears, x);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is on the specifed <paramref name="datetime"/> </summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="datetime">The date</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereOn(string column, DateTime datetime)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.On, datetime);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on or after the specifed <paramref name="datetime"/> </summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="datetime">The date</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereOnOrAfter(string column, DateTime datetime)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OnOrAfter, datetime);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is on or before the specifed <paramref name="datetime"/> </summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="datetime">The date</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereOnOrBefore(string column, DateTime datetime)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.OnOrBefore, datetime);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current fiscal period</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereThisFiscalPeriod(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ThisFiscalPeriod);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current fiscal year</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereThisFiscalYear(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ThisFiscalYear);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current month</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereThisMonth(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ThisMonth);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current week</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereThisWeek(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ThisWeek);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current year</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereThisYear(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.ThisYear);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> value is in the current day</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereToday(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Today);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is tomorrow</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereTomorrow(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Tomorrow);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> is under <paramref name="value"/> in the hierarchy</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereUnder(string column, Guid value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Under, value);
+
+            return this;
+        }
+        /// <summary>Adds a condition where <paramref name="column"/> is under or equals <paramref name="value"/> in the hierarchy</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <param name="value">The values.</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereUnderOrEqual(string column, Guid value)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.UnderOrEqual, value);
+
+            return this;
+        }
+
+        /// <summary>Adds a condition where <paramref name="column"/> value is yesterday</summary>
+        /// <param name="column">Logical name of the column</param>
+        /// <returns>The <see cref="Link{T,U}"/></returns>
+        public Link<T, U> WhereYesterday(string column)
+        {
+            InnerLinkEntity.LinkCriteria.AddCondition(column, ConditionOperator.Yesterday);
 
             return this;
         }
