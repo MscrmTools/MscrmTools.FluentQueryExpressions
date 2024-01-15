@@ -24,7 +24,6 @@ namespace MscrmTools.FluentQueryExpressions.Helpers
             var unaryInitialiazer = anonymousTypeInitializer.Body as UnaryExpression;
 
             if (newInitializer?.Members == null && memberInitializer?.Member == null && unaryInitialiazer?.Operand == null)
-
             {
                 throw new ArgumentException("lambda must return an object initializer");
             }
@@ -35,11 +34,11 @@ namespace MscrmTools.FluentQueryExpressions.Helpers
             }
             else if (memberInitializer?.Member != null)
             {
-                return new string[] { memberInitializer?.Member.Name.ToLower() };
+                return new string[] { GetLogicalAttributeName<T>(memberInitializer?.Member) };
             }
             else
             {
-                return new string[] { ((MemberExpression)unaryInitialiazer?.Operand).Member.Name.ToLower() };
+                return new string[] { GetLogicalAttributeName<T>(((MemberExpression)unaryInitialiazer?.Operand).Member) };
             }
         }
 
@@ -62,9 +61,14 @@ namespace MscrmTools.FluentQueryExpressions.Helpers
                 throw new ArgumentException("lambda must return an object initializer");
             }
 
-            // Search for and replace any occurence of Id with the actual Entity's Id
+            var attr = memberExp.Member.GetCustomAttribute<AttributeLogicalNameAttribute>();
 
-            return memberExp.Member.Name.ToLower();
+            if (attr == null)
+            {
+                throw new ArgumentException(memberExp.Member.Name + "does not contain an AttributeLogicalNameAttribute. Unable to determine logical name");
+            }
+
+            return attr.LogicalName;
         }
 
         /// <summary>
@@ -75,20 +79,14 @@ namespace MscrmTools.FluentQueryExpressions.Helpers
         private static string GetLogicalAttributeName<T>(MemberInfo property) where T : Entity
 
         {
-            var name = property.Name.ToLower();
-            if (name == "id")
+            var attribute = typeof(T).GetMember(property.Name).First().GetCustomAttribute<AttributeLogicalNameAttribute>();
+
+            if (attribute == null)
             {
-                var attribute = typeof(T).GetProperty("Id")?.GetCustomAttributes<AttributeLogicalNameAttribute>().FirstOrDefault();
-
-                if (attribute == null)
-                {
-                    throw new ArgumentException(property.Name + " does not contain an AttributeLogicalNameAttribute.  Unable to determine id");
-                }
-
-                name = attribute.LogicalName;
+                throw new ArgumentException(property.Name + " does not contain an AttributeLogicalNameAttribute.  Unable to determine logical name");
             }
 
-            return name;
+            return attribute.LogicalName;
         }
     }
 }
