@@ -1,4 +1,5 @@
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Client;
 using Microsoft.Xrm.Sdk.Query;
 using MscrmTools.FluentQueryExpressions.Helpers;
 using System;
@@ -6,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace MscrmTools.FluentQueryExpressions
 {
@@ -20,9 +22,8 @@ namespace MscrmTools.FluentQueryExpressions
         /// Initialize a new instance of class <see cref="Query"/>
         /// </summary>
         /// <param name="table">Logical name of the table to query</param>
-        public Query(string table) : base()
+        public Query(string table) : base(table)
         {
-            QueryExpression = new QueryExpression(table);
         }
 
         #endregion Constructors
@@ -165,8 +166,17 @@ namespace MscrmTools.FluentQueryExpressions
         /// </summary>
         public Query()
         {
-            string entityLogicalName = typeof(T).GetField("EntityLogicalName")?.GetRawConstantValue().ToString();
+            string entityLogicalName = typeof(T).GetCustomAttribute<EntityLogicalNameAttribute>(true).LogicalName;
             QueryExpression = new QueryExpression(entityLogicalName);
+        }
+
+        /// <summary>
+        /// Initialize a new instance of class <see cref="Query{T}"/>
+        /// </summary>
+        /// <param name="table"></param>
+        public Query(string table)
+        {
+            QueryExpression = new QueryExpression(table);
         }
 
         #endregion Constructors
@@ -398,10 +408,10 @@ namespace MscrmTools.FluentQueryExpressions
         public Query<T> AddLink<U>(Expression<Func<T, object>> fromColumn, Expression<Func<U, object>> toColumn, Func<Link<T, U>, Link<T, U>> link, JoinOperator jo = JoinOperator.Inner)
             where U : Entity
         {
-            string fromEntity = typeof(T).GetField("EntityLogicalName").GetRawConstantValue().ToString();
+            string fromEntity = typeof(T).GetCustomAttribute<EntityLogicalNameAttribute>(true).LogicalName;
             string fromAttr = AnonymousTypeHelper.GetAttributeName(fromColumn);
             string toAttr = AnonymousTypeHelper.GetAttributeName(toColumn);
-            string toEntity = typeof(U).GetField("EntityLogicalName").GetRawConstantValue().ToString();
+            string toEntity = typeof(U).GetCustomAttribute<EntityLogicalNameAttribute>(true).LogicalName;
 
             var le = new Link<T, U>(fromEntity, toEntity, fromAttr, toAttr, jo);
 
@@ -421,8 +431,8 @@ namespace MscrmTools.FluentQueryExpressions
         public Query<T> AddLink<U>(Func<Link<T, U>, Link<T, U>> link)
            where U : Entity
         {
-            string fromEntity = typeof(T).GetField("EntityLogicalName").GetRawConstantValue().ToString();
-            string toEntity = typeof(U).GetField("EntityLogicalName").GetRawConstantValue().ToString();
+            string fromEntity = typeof(T).GetCustomAttribute<EntityLogicalNameAttribute>(true).LogicalName;
+            string toEntity = typeof(U).GetCustomAttribute<EntityLogicalNameAttribute>(true).LogicalName;
 
             var le = new Link<T, U>(fromEntity, toEntity, null, null, JoinOperator.Inner);
 
@@ -445,10 +455,10 @@ namespace MscrmTools.FluentQueryExpressions
             where U : Entity
 
         {
-            string fromEntity = typeof(T).GetField("EntityLogicalName").GetRawConstantValue().ToString();
+            string fromEntity = typeof(T).GetCustomAttribute<EntityLogicalNameAttribute>(true).LogicalName;
             string fromAttr = AnonymousTypeHelper.GetAttributeName(fromColumn);
             string toAttr = AnonymousTypeHelper.GetAttributeName(toColumn);
-            string toEntity = typeof(U).GetField("EntityLogicalName").GetRawConstantValue().ToString();
+            string toEntity = typeof(U).GetCustomAttribute<EntityLogicalNameAttribute>(true).LogicalName;
 
             var le = new Link<T, U>(fromEntity, toEntity, fromAttr, toAttr, jo);
 
