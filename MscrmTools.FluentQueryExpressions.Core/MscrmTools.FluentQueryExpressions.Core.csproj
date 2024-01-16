@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>MscrmTools.FluentQueryExpressions</AssemblyName>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>C:\P\T\Github\MscrmTools.FluentQueryExpressions\MscrmTools.FluentQueryExpressions\MscrmTools.Key.snk</AssemblyOriginatorKeyFile>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Version>2.0.3</Version>
+    <Authors>MscrmTools</Authors>
+    <Company>MscrmTools</Company>
+  </PropertyGroup>
+
+  <Import Project="..\MscrmTools.Shared\MscrmTools.Shared.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.PowerPlatform.Dataverse.Client" Version="1.1.12" />
+  </ItemGroup>
+
+</Project>

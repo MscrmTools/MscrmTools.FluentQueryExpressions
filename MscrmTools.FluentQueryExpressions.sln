@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2041
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MscrmTools.FluentQueryExpressions", "MscrmTools.FluentQueryExpressions\MscrmTools.FluentQueryExpressions.csproj", "{2A313862-8D9B-4191-BC2C-015AAFCE295F}"
 EndProject
@@ -11,9 +11,17 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MscrmTools.Shared", "MscrmT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MscrmTools.FluentQueryExpressions.v8", "MscrmTools.FluentQueryExpressions.v8\MscrmTools.FluentQueryExpressions.v8.csproj", "{932ACA20-4FEF-4B4B-8EFF-9198EA1E6215}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MscrmTools.FluentQueryExpressions.Core", "MscrmTools.FluentQueryExpressions.Core\MscrmTools.FluentQueryExpressions.Core.csproj", "{808639E0-674E-465A-84DC-92E05690BDBD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4A8CFF46-AE14-4D2C-8C83-7C56943AB3B3}"
+	ProjectSection(SolutionItems) = preProject
+		MscrmTools.FluentQueryExpressions.nuspec = MscrmTools.FluentQueryExpressions.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		MscrmTools.Shared\MscrmTools.Shared.projitems*{2a313862-8d9b-4191-bc2c-015aafce295f}*SharedItemsImports = 4
+		MscrmTools.Shared\MscrmTools.Shared.projitems*{808639e0-674e-465a-84dc-92e05690bdbd}*SharedItemsImports = 5
 		MscrmTools.Shared\MscrmTools.Shared.projitems*{92d1c46c-d61e-4d1a-aaea-530b53b4ad53}*SharedItemsImports = 13
 		MscrmTools.Shared\MscrmTools.Shared.projitems*{932aca20-4fef-4b4b-8eff-9198ea1e6215}*SharedItemsImports = 4
 	EndGlobalSection
@@ -34,6 +42,10 @@ Global
 		{932ACA20-4FEF-4B4B-8EFF-9198EA1E6215}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{932ACA20-4FEF-4B4B-8EFF-9198EA1E6215}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{932ACA20-4FEF-4B4B-8EFF-9198EA1E6215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{808639E0-674E-465A-84DC-92E05690BDBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{808639E0-674E-465A-84DC-92E05690BDBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{808639E0-674E-465A-84DC-92E05690BDBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{808639E0-674E-465A-84DC-92E05690BDBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

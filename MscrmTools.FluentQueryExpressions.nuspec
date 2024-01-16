@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>MscrmTools.FluentQueryExpressions</id>
+    <version>1.2021.3.16</version>
+    <title>Fluent Query Expressions</title>
+    <authors>MscrmTools</authors>
+    <owners>MscrmTools</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/MscrmTools/MscrmTools.FluentQueryExpressions</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/wiki/MscrmTools/XrmToolBox/Images/logo_0100.png</iconUrl>
+    <description>A library to create QueryExpression the fluent way</description>
+    <summary>A library to create QueryExpression the fluent way</summary>
+    <releaseNotes>
+      Added .Net Standard 6 version
+      Removed references to Microsoft.Crm.Sdk.Proxy to enable use with Dataverse Plugins Package feature
+    </releaseNotes>
+    <tags>Dataverse Dynamics Fluent QueryExpression</tags>
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="Microsoft.PowerPlatform.Dataverse.Client" version="1.1.12" />
+      </group>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="Microsoft.CrmSdk.CoreAssemblies" version="9.0.2.49" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="MscrmTools.FluentQueryExpressions\bin\release\MscrmTools.FluentQueryExpressions.dll" target="lib\net462\MscrmTools.FluentQueryExpressions.dll" />
+    <file src="MscrmTools.FluentQueryExpressions\bin\release\MscrmTools.FluentQueryExpressions.pdb" target="lib\net462\MscrmTools.FluentQueryExpressions.pdb" />
+    <file src="MscrmTools.FluentQueryExpressions\bin\release\MscrmTools.FluentQueryExpressions.xml" target="lib\net462\MscrmTools.FluentQueryExpressions.xml" />
+    <file src="MscrmTools.FluentQueryExpressions.Core\bin\release\net6.0\MscrmTools.FluentQueryExpressions.dll" target="lib\net6.0\MscrmTools.FluentQueryExpressions.dll" />
+    <file src="MscrmTools.FluentQueryExpressions.Core\bin\release\net6.0\MscrmTools.FluentQueryExpressions.pdb" target="lib\net6.0\MscrmTools.FluentQueryExpressions.pdb" />
+    <file src="MscrmTools.FluentQueryExpressions.Core\bin\release\net6.0\MscrmTools.FluentQueryExpressions.xml" target="lib\net6.0\MscrmTools.FluentQueryExpressions.xml" />
+  </files>
+</package>
