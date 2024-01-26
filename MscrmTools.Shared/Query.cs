@@ -190,6 +190,18 @@ namespace MscrmTools.FluentQueryExpressions
 
         #endregion Properties
 
+        #region Operators
+
+        /// <summary>
+        /// Get the <c>QueryExpression</c> representation of this <see cref="Query{T}"/>
+        /// </summary>
+        public static implicit operator QueryExpression(Query<T> query)
+        {
+            return query.QueryExpression;
+        }
+
+        #endregion Operators
+
         #region QueryExpression
 
         /// <summary>
