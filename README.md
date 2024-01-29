@@ -145,10 +145,10 @@ var lateBoundQuery2 = new Query("account")
 
 ## Executing query
 
-Either retrieve ```QueryExpression``` property or use one of the method to get records
+Invoke `RetrieveMultiple` method on `IOrganizationService` with the query or use one of the method to get records
 
 ```
-var qe = new Query("account").QueryExpression;
+iOrganizationService.RetrieveMultiple(new Query("account"));
 
 List<Account> records = new Query<Account>().GetAll(iOrganizationService);
 Account record = new Query<Account>().GetFirst(iOrganizationService);
