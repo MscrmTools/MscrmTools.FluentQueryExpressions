@@ -3271,7 +3271,7 @@ namespace MscrmTools.FluentQueryExpressions
         /// <param name="column">Logical name of the column</param>
         /// <param name="value">The value</param>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Query<T> WhereLessEqual(Expression<Func<T, object>> column, int value)
+        public Query<T> WhereLessEqual(Expression<Func<T, object>> column, object value)
         {
             QueryExpression.Criteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessEqual, value);
 
@@ -3283,7 +3283,7 @@ namespace MscrmTools.FluentQueryExpressions
         /// <param name="column">Logical name of the column</param>
         /// <param name="value">The value</param>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Query<T> WhereLessEqual<U>(string tableAlias, Expression<Func<U, object>> column, int value) where U : Entity
+        public Query<T> WhereLessEqual<U>(string tableAlias, Expression<Func<U, object>> column, object value) where U : Entity
         {
             QueryExpression.Criteria.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessEqual, value);
 
@@ -3294,7 +3294,7 @@ namespace MscrmTools.FluentQueryExpressions
         /// <param name="column">Logical name of the column</param>
         /// <param name="value">The value</param>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Query<T> WhereLessThan(Expression<Func<T, object>> column, int value)
+        public Query<T> WhereLessThan(Expression<Func<T, object>> column, object value)
         {
             QueryExpression.Criteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessThan, value);
 
@@ -3306,7 +3306,7 @@ namespace MscrmTools.FluentQueryExpressions
         /// <param name="column">Logical name of the column</param>
         /// <param name="value">The value</param>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Query<T> WhereLessThan<U>(string tableAlias, Expression<Func<U, object>> column, int value) where U : Entity
+        public Query<T> WhereLessThan<U>(string tableAlias, Expression<Func<U, object>> column, object value) where U : Entity
         {
             QueryExpression.Criteria.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessThan, value);
 
