@@ -740,7 +740,13 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Link{T,U}"/></returns>
         public Link<T, U> WhereGreaterEqual(Expression<Func<U, object>> column, object value)
         {
-            InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterEqual, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterEqual, convertedValue);
 
             return this;
         }
@@ -751,7 +757,13 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Link{T,U}"/></returns>
         public Link<T, U> WhereGreaterThan(Expression<Func<U, object>> column, object value)
         {
-            InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterThan, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterThan, convertedValue);
 
             return this;
         }
@@ -1004,9 +1016,15 @@ namespace MscrmTools.FluentQueryExpressions
         /// <param name="column">Logical name of the column</param>
         /// <param name="value">The value</param>
         /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link<T, U> WhereLessEqual(Expression<Func<U, object>> column, int value)
+        public Link<T, U> WhereLessEqual(Expression<Func<U, object>> column, object value)
         {
-            InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessEqual, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessEqual, convertedValue);
 
             return this;
         }
@@ -1015,9 +1033,15 @@ namespace MscrmTools.FluentQueryExpressions
         /// <param name="column">Logical name of the column</param>
         /// <param name="value">The value</param>
         /// <returns>The <see cref="Link{T,U}"/></returns>
-        public Link<T, U> WhereLessThan(Expression<Func<U, object>> column, int value)
+        public Link<T, U> WhereLessThan(Expression<Func<U, object>> column, object value)
         {
-            InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessThan, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessThan, convertedValue);
 
             return this;
         }

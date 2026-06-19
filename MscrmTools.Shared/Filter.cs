@@ -2450,7 +2450,13 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Filter<T> WhereGreaterEqual(Expression<Func<T, object>> column, object value)
         {
-            InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterEqual, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterEqual, convertedValue);
 
             return this;
         }
@@ -2462,7 +2468,13 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Filter<T> WhereGreaterEqual<U>(string tableAlias, Expression<Func<U, object>> column, object value) where U : Entity
         {
-            InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterEqual, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterEqual, convertedValue);
 
             return this;
         }
@@ -2473,7 +2485,13 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Filter<T> WhereGreaterThan(Expression<Func<T, object>> column, object value)
         {
-            InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterThan, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterThan, convertedValue);
 
             return this;
         }
@@ -2485,7 +2503,13 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Filter<T> WhereGreaterThan<U>(string tableAlias, Expression<Func<U, object>> column, object value) where U : Entity
         {
-            InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterThan, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.GreaterThan, convertedValue);
 
             return this;
         }
@@ -3001,9 +3025,15 @@ namespace MscrmTools.FluentQueryExpressions
         /// <param name="column">Logical name of the column</param>
         /// <param name="value">The value</param>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Filter<T> WhereLessEqual(Expression<Func<T, object>> column, int value)
+        public Filter<T> WhereLessEqual(Expression<Func<T, object>> column, object value)
         {
-            InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessEqual, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessEqual, convertedValue);
 
             return this;
         }
@@ -3013,9 +3043,15 @@ namespace MscrmTools.FluentQueryExpressions
         /// <param name="column">Logical name of the column</param>
         /// <param name="value">The value</param>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Filter<T> WhereLessEqual<U>(string tableAlias, Expression<Func<U, object>> column, int value) where U : Entity
+        public Filter<T> WhereLessEqual<U>(string tableAlias, Expression<Func<U, object>> column, object value) where U : Entity
         {
-            InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessEqual, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessEqual, convertedValue);
 
             return this;
         }
@@ -3024,9 +3060,15 @@ namespace MscrmTools.FluentQueryExpressions
         /// <param name="column">Logical name of the column</param>
         /// <param name="value">The value</param>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Filter<T> WhereLessThan(Expression<Func<T, object>> column, int value)
+        public Filter<T> WhereLessThan(Expression<Func<T, object>> column, object value)
         {
-            InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessThan, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessThan, convertedValue);
 
             return this;
         }
@@ -3036,9 +3078,15 @@ namespace MscrmTools.FluentQueryExpressions
         /// <param name="column">Logical name of the column</param>
         /// <param name="value">The value</param>
         /// <returns>The <see cref="Query{T}"/></returns>
-        public Filter<T> WhereLessThan<U>(string tableAlias, Expression<Func<U, object>> column, int value) where U : Entity
+        public Filter<T> WhereLessThan<U>(string tableAlias, Expression<Func<U, object>> column, object value) where U : Entity
         {
-            InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessThan, value);
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.LessThan, convertedValue);
 
             return this;
         }

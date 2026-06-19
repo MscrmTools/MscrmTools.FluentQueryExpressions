@@ -1026,13 +1026,19 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Query<T> WhereGreaterEqual(string column, object value, string tableAlias = null)
         {
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
             if (tableAlias != null)
             {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.GreaterEqual, value);
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.GreaterEqual, convertedValue);
             }
             else
             {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.GreaterEqual, value);
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.GreaterEqual, convertedValue);
             }
 
             return this;
@@ -1045,13 +1051,19 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Query<T> WhereGreaterThan(string column, object value, string tableAlias = null)
         {
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
             if (tableAlias != null)
             {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.GreaterThan, value);
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.GreaterThan, convertedValue);
             }
             else
             {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.GreaterThan, value);
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.GreaterThan, convertedValue);
             }
 
             return this;
@@ -1480,13 +1492,19 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Query<T> WhereLessEqual(string column, object value, string tableAlias = null)
         {
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
             if (tableAlias != null)
             {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LessEqual, value);
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LessEqual, convertedValue);
             }
             else
             {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LessEqual, value);
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LessEqual, convertedValue);
             }
 
             return this;
@@ -1499,13 +1517,19 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Query<T> WhereLessThan(string column, object value, string tableAlias = null)
         {
+            var convertedValue = value;
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
             if (tableAlias != null)
             {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LessThan, value);
+                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.LessThan, convertedValue);
             }
             else
             {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LessThan, value);
+                QueryExpression.Criteria.AddCondition(column, ConditionOperator.LessThan, convertedValue);
             }
 
             return this;
