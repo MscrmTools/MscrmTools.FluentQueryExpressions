@@ -829,13 +829,41 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Query<T> WhereEqual(string column, object value, string tableAlias = null)
         {
+            object convertedValue = value;
+            if (value is EntityReference er)
+            {
+                convertedValue = er.Id;
+            }
+            if (value is OptionSetValue osv)
+            {
+                convertedValue = osv.Value;
+            }
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
             if (tableAlias != null)
             {
-                QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Equal, value);
+                if (convertedValue == null)
+                {
+                    QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Null);
+                }
+                else
+                {
+                    QueryExpression.Criteria.AddCondition(tableAlias, column, ConditionOperator.Equal, convertedValue);
+                }
             }
             else
             {
-                QueryExpression.Criteria.AddCondition(column, ConditionOperator.Equal, value);
+                if (convertedValue == null)
+                {
+                    QueryExpression.Criteria.AddCondition(column, ConditionOperator.Null);
+                }
+                else
+                {
+                    QueryExpression.Criteria.AddCondition(column, ConditionOperator.Equal, convertedValue);
+                }
             }
 
             return this;

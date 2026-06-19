@@ -638,7 +638,28 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Link{T,U}"/></returns>
         public Link<T, U> WhereEqual(Expression<Func<U, object>> column, object value)
         {
-            InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.Equal, value);
+            object convertedValue = value;
+            if (value is EntityReference er)
+            {
+                convertedValue = er.Id;
+            }
+            if (value is OptionSetValue osv)
+            {
+                convertedValue = osv.Value;
+            }
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            if (convertedValue == null)
+            {
+                InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.Null);
+            }
+            else
+            {
+                InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.Equal, value);
+            }
 
             return this;
         }

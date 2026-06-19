@@ -337,13 +337,41 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Filter WhereEqual(string column, object value, string tableAlias = null)
         {
-            if (tableAlias != null)
+            object convertedValue = value;
+            if (value is EntityReference er)
             {
-                InnerFilter.AddCondition(tableAlias, column, ConditionOperator.Equal, value);
+                convertedValue = er.Id;
+            }
+            if (value is OptionSetValue osv)
+            {
+                convertedValue = osv.Value;
+            }
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
+
+            if (convertedValue == null)
+            {
+                if (tableAlias != null)
+                {
+                    InnerFilter.AddCondition(tableAlias, column, ConditionOperator.Null);
+                }
+                else
+                {
+                    InnerFilter.AddCondition(column, ConditionOperator.Null);
+                }
             }
             else
             {
-                InnerFilter.AddCondition(column, ConditionOperator.Equal, value);
+                if (tableAlias != null)
+                {
+                    InnerFilter.AddCondition(tableAlias, column, ConditionOperator.Equal, convertedValue);
+                }
+                else
+                {
+                    InnerFilter.AddCondition(column, ConditionOperator.Equal, convertedValue);
+                }
             }
 
             return this;
@@ -2232,8 +2260,28 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Filter<T> WhereEqual(Expression<Func<T, object>> column, object value)
         {
-            InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.Equal, value);
+            object convertedValue = value;
+            if (value is EntityReference er)
+            {
+                convertedValue = er.Id;
+            }
+            if (value is OptionSetValue osv)
+            {
+                convertedValue = osv.Value;
+            }
+            if (value is Money m)
+            {
+                convertedValue = m.Value;
+            }
 
+            if (convertedValue == null)
+            {
+                InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.Null);
+            }
+            else
+            {
+                InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.Equal, convertedValue);
+            }
             return this;
         }
 
