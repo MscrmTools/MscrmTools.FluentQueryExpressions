@@ -216,6 +216,29 @@ namespace MscrmTools.FluentQueryExpressions
         }
 
         /// <summary>
+        /// Specifies that the <c>QueryExpression</c> should retrieve data from the recycle bin
+        /// </summary>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> FromRecycleBin()
+        {
+            QueryExpression.DataSource = "bin";
+
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies that the <c>QueryExpression</c> should retrieve data from the recycle bin
+        /// </summary>
+        /// <param name="source">The data source to retrieve data from</param>
+        /// <returns>The <see cref="Query{T}"/></returns>
+        public Query<T> SetDataSource(string source)
+        {
+            QueryExpression.DataSource = source;
+
+            return this;
+        }
+
+        /// <summary>
         /// Specifies that the <c>QueryExpression</c> should not lock the table when retrieving data
         /// </summary>
         /// <returns>The <see cref="Query{T}"/></returns>
