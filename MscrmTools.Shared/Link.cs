@@ -762,7 +762,21 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Link{T,U}"/></returns>
         public Link<T, U> WhereIn(Expression<Func<U, object>> column, IList values)
         {
-            InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            if (values[0] is IEnumerable ie)
+            {
+                var ce = new ConditionExpression(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In);
+
+                foreach (var v in ie)
+                {
+                    ce.Values.Add(v);
+                }
+
+                InnerLinkEntity.LinkCriteria.Conditions.Add(ce);
+            }
+            else
+            {
+                InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            }
 
             return this;
         }
@@ -773,7 +787,21 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Link{T,U}"/></returns>
         public Link<T, U> WhereIn(Expression<Func<U, object>> column, params object[] values)
         {
-            InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            if (values[0] is IEnumerable ie)
+            {
+                var ce = new ConditionExpression(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In);
+
+                foreach (var v in ie)
+                {
+                    ce.Values.Add(v);
+                }
+
+                InnerLinkEntity.LinkCriteria.Conditions.Add(ce);
+            }
+            else
+            {
+                InnerLinkEntity.LinkCriteria.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            }
 
             return this;
         }

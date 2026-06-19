@@ -1086,8 +1086,21 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Query<T> WhereIn(string column, params object[] values)
         {
-            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.In, values));
+            if (values[0] is IEnumerable ie)
+            {
+                var ce = new ConditionExpression(column, ConditionOperator.In);
 
+                foreach (var v in ie)
+                {
+                    ce.Values.Add(v);
+                }
+
+                QueryExpression.Criteria.Conditions.Add(ce);
+            }
+            else
+            {
+                QueryExpression.Criteria.Conditions.Add(new ConditionExpression(column, ConditionOperator.In, values));
+            }
             return this;
         }
 
@@ -1098,7 +1111,21 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Query<T> WhereIn(string tableAlias, string column, params object[] values)
         {
-            QueryExpression.Criteria.Conditions.Add(new ConditionExpression(tableAlias, column, ConditionOperator.In, values));
+            if (values[0] is IEnumerable ie)
+            {
+                var ce = new ConditionExpression(tableAlias, column, ConditionOperator.In);
+
+                foreach (var v in ie)
+                {
+                    ce.Values.Add(v);
+                }
+
+                QueryExpression.Criteria.Conditions.Add(ce);
+            }
+            else
+            {
+                QueryExpression.Criteria.Conditions.Add(new ConditionExpression(tableAlias, column, ConditionOperator.In, values));
+            }
 
             return this;
         }

@@ -2496,8 +2496,21 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Filter<T> WhereIn(Expression<Func<T, object>> column, IList values)
         {
-            InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            if (values[0] is IEnumerable ie)
+            {
+                var ce = new ConditionExpression(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In);
 
+                foreach (var v in ie)
+                {
+                    ce.Values.Add(v);
+                }
+
+                InnerFilter.Conditions.Add(ce);
+            }
+            else
+            {
+                InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            }
             return this;
         }
 
@@ -2508,8 +2521,21 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Filter<T> WhereIn<U>(string tableAlias, Expression<Func<U, object>> column, IList values) where U : Entity
         {
-            InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            if (values[0] is IEnumerable ie)
+            {
+                var ce = new ConditionExpression(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In);
 
+                foreach (var v in ie)
+                {
+                    ce.Values.Add(v);
+                }
+
+                InnerFilter.Conditions.Add(ce);
+            }
+            else
+            {
+                InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            }
             return this;
         }
 
@@ -2519,7 +2545,21 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Filter<T> WhereIn(Expression<Func<T, object>> column, params object[] values)
         {
-            InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            if (values[0] is IEnumerable ie)
+            {
+                var ce = new ConditionExpression(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In);
+
+                foreach (var v in ie)
+                {
+                    ce.Values.Add(v);
+                }
+
+                InnerFilter.Conditions.Add(ce);
+            }
+            else
+            {
+                InnerFilter.AddCondition(AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            }
 
             return this;
         }
@@ -2531,8 +2571,21 @@ namespace MscrmTools.FluentQueryExpressions
         /// <returns>The <see cref="Query{T}"/></returns>
         public Filter<T> WhereIn(string tableAlias, Expression<Func<T, object>> column, params object[] values)
         {
-            InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            if (values[0] is IEnumerable ie)
+            {
+                var ce = new ConditionExpression(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In);
 
+                foreach (var v in ie)
+                {
+                    ce.Values.Add(v);
+                }
+
+                InnerFilter.Conditions.Add(ce);
+            }
+            else
+            {
+                InnerFilter.AddCondition(tableAlias, AnonymousTypeHelper.GetAttributeName(column), ConditionOperator.In, values);
+            }
             return this;
         }
 
